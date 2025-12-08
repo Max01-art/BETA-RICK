@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject_name }} | Classmate</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .subject-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: var(--card-shadow);
+            border-left: 6px solid {{ subject_details.color if subject_details and subject_details.color else '#4361ee' }};
+            transition: transform 0.3s ease;
+        }
+
+        .subject-header:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .subject-color-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: inline-block;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            height: 100%;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border-top: 4px solid;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .work-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--card-shadow);
+            border-left: 5px solid;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .work-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .work-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 100%);
+        }
+
+        .work-card.today { border-left-color: var(--danger-color); }
+        .work-card.tomorrow { border-left-color: var(--warning-color); }
+        .work-card.soon { border-left-color: var(--success-color); }
+        .work-card.future { border-left-color: var(--primary-color); }
+
+        .days-badge {
+            font-size: 0.9rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .category-pill {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .category-pill:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .file-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #4361ee;
+            transition: all 0.3s ease;
+        }
+
+        .file-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+            color: #4361ee;
+        }
+
+        .empty-state {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .tab-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 1rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: #495057;
+            font-weight: 500;
+            padding: 1rem 2rem;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: white;
+            color: var(--primary-color);
+            font-weight: 600;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-custom {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+            color: white;
+        }
+
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: white;
+        }
+
+        .floating-action-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 20px rgba(67, 97, 238, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .floating-action-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .subject-header {
+                padding: 1.5rem;
+                margin-top: 1rem;
+            }
+            
+            .nav-tabs .nav-link {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .floating-action-btn {
+                bottom: 1rem;
+                right: 1rem;
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигационная панель -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(0,0,0,0.2); backdrop-filter: blur(10px);">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="fas fa-graduation-cap me-2" style="color: #4cc9f0;"></i>
+                <span style="font-weight: 700; font-size: 1.3rem;">Classmate</span>
+            </a>
+            
+            <div class="d-flex align-items-center">
+                <a href="/" class="back-btn me-3">
+                    <i class="fas fa-arrow-left me-2"></i>Назад
+                </a>
+                
+                {% if is_host %}
+                <div class="dropdown">
+                    <button class="btn btn-custom dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-shield me-2"></i>Хост
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Выйти</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <!-- Заголовок предмета -->
+        <div class="subject-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="subject-color-badge me-3" style="background-color: {{ subject_details.color if subject_details and subject_details.color else '#4361ee' }};"></div>
+                        <h1 class="mb-0" style="font-weight: 800; color: #2d3748;">
+                            {{ subject_name }}
+                            {% if subject_details and subject_details.description %}
+                            <small class="text-muted d-block mt-2" style="font-size: 1.1rem;">
+                                <i class="fas fa-info-circle me-2"></i>{{ subject_details.description }}
+                            </small>
+                            {% endif %}
+                        </h1>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="btn-group">
+                        <button class="btn btn-custom" onclick="downloadCalendar('all')">
+                            <i class="fas fa-calendar-download me-2"></i>Календарь
+                        </button>
+                        {% if is_host %}
+                        <button class="btn btn-outline-primary" onclick="showEditModal()">
+                            <i class="fas fa-edit me-2"></i>Редактировать
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Статистика -->
+        <div class="row mt-4">
+            <div class="col-md-3 mb-3">
+                <div class="stats-card" style="border-top-color: #f72585;">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3" style="font-size: 2rem; color: #f72585;">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0">{{ tests|length }}</h3>
+                            <small class="text-muted">Всего работ</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card" style="border-top-color: #f8961e;">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3" style="font-size: 2rem; color: #f8961e;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0">{{ tests|selectattr('days_left', 'equalto', 0)|list|length }}</h3>
+                            <small class="text-muted">Сегодня</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card" style="border-top-color: #4cc9f0;">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3" style="font-size: 2rem; color: #4cc9f0;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0">{{ tests|selectattr('days_left', '>=', 1)|selectattr('days_left', '<=', 7)|list|length }}</h3>
+                            <small class="text-muted">Скоро (7 дней)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card" style="border-top-color: #7209b7;">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3" style="font-size: 2rem; color: #7209b7;">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0">{{ total_files }}</h3>
+                            <small class="text-muted">Файлов</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладки -->
+        <ul class="nav nav-tabs mt-4" id="subjectTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="works-tab" data-bs-toggle="tab" data-bs-target="#works" type="button">
+                    <i class="fas fa-tasks me-2"></i>Работы
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="files-tab" data-bs-toggle="tab" data-bs-target="#files" type="button">
+                    <i class="fas fa-folder me-2"></i>Материалы
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar" type="button">
+                    <i class="fas fa-calendar-alt me-2"></i>Календарь
+                </button>
+            </li>
+        </ul>
+
+        <!-- Содержимое вкладок -->
+        <div class="tab-content">
+            <!-- Вкладка работ -->
+            <div class="tab-pane fade show active" id="works" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>
+                        Все работы ({{ tests|length }})
+                    </h3>
+                    {% if is_host %}
+                    <div>
+                        <button class="btn btn-custom me-2" onclick="location.href='/add?subject={{ subject_name }}'">
+                            <i class="fas fa-plus me-2"></i>Добавить тест
+                        </button>
+                        <button class="btn btn-custom" onclick="location.href='/add_homework?subject={{ subject_name }}'">
+                            <i class="fas fa-book me-2"></i>Добавить задание
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if tests %}
+                <!-- Фильтры -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary active" onclick="filterWorks('all')">Все</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="filterWorks('today')">Сегодня</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="filterWorks('soon')">Скоро</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="filterWorks('future')">Будущие</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <select class="form-select" onchange="sortWorks(this.value)" style="max-width: 200px;">
+                            <option value="date_asc">По дате ↑</option>
+                            <option value="date_desc">По дате ↓</option>
+                            <option value="type">По типу</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Список работ -->
+                <div id="works-list">
+                    {% for work in tests %}
+                    <div class="work-card {{ get_work_status(work.days_left) }}" data-days="{{ work.days_left }}" data-type="{{ work.type }}">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        {% if work.source == 'homework' %}
+                                        <i class="fas fa-book text-primary" style="font-size: 1.5rem;"></i>
+                                        {% else %}
+                                        <i class="fas fa-clipboard-check text-warning" style="font-size: 1.5rem;"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-1">
+                                            {{ work.title if work.title else work.subject }}
+                                            <span class="badge bg-secondary ms-2">{{ work.type }}</span>
+                                        </h5>
+                                        <p class="mb-1 text-muted">
+                                            <i class="far fa-calendar me-1"></i>
+                                            {{ work.date }}
+                                            {% if work.time != '23:59' %}
+                                            <i class="far fa-clock ms-3 me-1"></i>
+                                            {{ work.time }}
+                                            {% endif %}
+                                        </p>
+                                        {% if work.description %}
+                                        <p class="mb-0 small">{{ work.description|truncate(150) }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-end align-items-center">
+                                    <div class="me-3 text-center">
+                                        <span class="days-badge 
+                                            {% if work.days_left == 0 %}bg-danger
+                                            {% elif work.days_left == 1 %}bg-warning text-dark
+                                            {% elif work.days_left <= 7 %}bg-info
+                                            {% else %}bg-primary{% endif %}">
+                                            {% if work.days_left == 0 %}
+                                            <i class="fas fa-exclamation-triangle me-1"></i>СЕГОДНЯ
+                                            {% elif work.days_left == 1 %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>ЗАВТРА
+                                            {% elif work.days_left < 0 %}
+                                            <i class="fas fa-times-circle me-1"></i>ПРОСРОЧЕНО
+                                            {% else %}
+                                            {{ work.days_left }} дн.
+                                            {% endif %}
+                                        </span>
+                                        <small class="d-block text-muted mt-1">осталось</small>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="downloadCalendar('{{ work.source }}', {{ work.id }})" title="Календарь">
+                                            <i class="fas fa-calendar-plus"></i>
+                                        </button>
+                                        {% if is_host %}
+                                        {% if work.source == 'homework' %}
+                                        <a href="/delete_homework/{{ work.id }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить задание?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                        {% else %}
+                                        <a href="/delete/{{ work.id }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить тест?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                        {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h4>Пока нет работ</h4>
+                    <p>Добавьте тесты или задания для этого предмета</p>
+                    {% if is_host %}
+                    <button class="btn btn-custom mt-3" onclick="location.href='/add?subject={{ subject_name }}'">
+                        <i class="fas fa-plus me-2"></i>Добавить первую работу
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Вкладка материалов -->
+            <div class="tab-pane fade" id="files" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-folder-open me-2"></i>
+                        Учебные материалы
+                    </h3>
+                    {% if is_host %}
+                    <div>
+                        <button class="btn btn-custom me-2" onclick="showAddCategoryModal()">
+                            <i class="fas fa-folder-plus me-2"></i>Добавить категорию
+                        </button>
+                        <button class="btn btn-custom" onclick="showAddFileModal()">
+                            <i class="fas fa-file-upload me-2"></i>Загрузить файл
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if file_categories %}
+                <!-- Категории -->
+                <div class="mb-4">
+                    <h5 class="mb-3">Категории:</h5>
+                    <div id="categories-list">
+                        {% for category in file_categories %}
+                        <div class="category-pill" style="background: linear-gradient(135deg, {{ category.color }} 0%, {{ category.color }}80 100%);">
+                            <i class="fas fa-folder me-1"></i>
+                            {{ category.name }}
+                            {% if category.file_count > 0 %}
+                            <span class="badge bg-light text-dark ms-1">{{ category.file_count }}</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Файлы по категориям -->
+                {% for category in file_categories %}
+                {% if files_by_category[category.id] %}
+                <div class="mb-4">
+                    <h5 class="d-flex align-items-center">
+                        <i class="fas fa-folder me-2" style="color: {{ category.color }};"></i>
+                        {{ category.name }}
+                        {% if category.description %}
+                        <small class="text-muted ms-2">- {{ category.description }}</small>
+                        {% endif %}
+                        <span class="badge bg-secondary ms-2">{{ files_by_category[category.id]|length }}</span>
+                    </h5>
+                    
+                    <div class="row">
+                        {% for file in files_by_category[category.id] %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="file-item">
+                                <div class="d-flex align-items-center">
+                                    <div class="file-icon">
+                                        {% if file.file_type in ['pdf'] %}
+                                        <i class="fas fa-file-pdf"></i>
+                                        {% elif file.file_type in ['doc', 'docx'] %}
+                                        <i class="fas fa-file-word"></i>
+                                        {% elif file.file_type in ['xls', 'xlsx'] %}
+                                        <i class="fas fa-file-excel"></i>
+                                        {% elif file.file_type in ['ppt', 'pptx'] %}
+                                        <i class="fas fa-file-powerpoint"></i>
+                                        {% elif file.file_type in ['jpg', 'jpeg', 'png', 'gif'] %}
+                                        <i class="fas fa-file-image"></i>
+                                        {% else %}
+                                        <i class="fas fa-file"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="mb-1">{{ file.original_filename }}</h6>
+                                                <small class="text-muted">
+                                                    {{ (file.file_size / 1024)|round(1) if file.file_size else 0 }} KB • 
+                                                    {{ file.upload_date }}
+                                                </small>
+                                            </div>
+                                            <div class="btn-group">
+                                                <a href="{{ file.file_path }}" class="btn btn-sm btn-outline-primary" download>
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                                {% if is_host %}
+                                                <button class="btn btn-sm btn-outline-danger" onclick="deleteFile({{ file.id }})">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% if file.description %}
+                                        <p class="mb-0 small mt-1">{{ file.description }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <h4>Нет материалов</h4>
+                    <p>Добавьте категории и загрузите учебные материалы</p>
+                    {% if is_host %}
+                    <button class="btn btn-custom mt-3" onclick="showAddCategoryModal()">
+                        <i class="fas fa-folder-plus me-2"></i>Создать первую категорию
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Вкладка календаря -->
+            <div class="tab-pane fade" id="calendar" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h3 class="mb-4">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Календарь работ
+                        </h3>
+                        
+                        <div id="calendar-preview" class="mb-4">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 20%;">Дата</th>
+                                            <th style="width: 20%;">Тип</th>
+                                            <th style="width: 40%;">Работа</th>
+                                            <th style="width: 20%;">Дней до</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for work in tests|sort(attribute='date') %}
+                                        <tr>
+                                            <td>{{ work.date }}</td>
+                                            <td>
+                                                <span class="badge {% if work.source == 'homework' %}bg-primary{% else %}bg-warning{% endif %}">
+                                                    {{ work.type }}
+                                                </span>
+                                            </td>
+                                            <td>{{ work.title if work.title else work.description|truncate(50) }}</td>
+                                            <td>
+                                                <span class="badge {% if work.days_left == 0 %}bg-danger{% elif work.days_left <= 3 %}bg-warning{% else %}bg-success{% endif %}">
+                                                    {{ work.days_left }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-download me-2"></i>
+                                    Экспорт календаря
+                                </h5>
+                                <p class="card-text">
+                                    Скачайте все работы этого предмета в формате .ics для импорта в Google Calendar, Outlook или другие календарные приложения.
+                                </p>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-custom" onclick="downloadCalendar('all')">
+                                        <i class="fas fa-file-export me-2"></i>
+                                        Скачать .ics файл
+                                    </button>
+                                    <button class="btn btn-outline-primary" onclick="showCalendarInstructions()">
+                                        <i class="fas fa-question-circle me-2"></i>
+                                        Инструкция по импорту
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопка действий -->
+    {% if is_host %}
+    <button class="floating-action-btn" onclick="showQuickActions()">
+        <i class="fas fa-plus"></i>
+    </button>
+    {% endif %}
+
+    <!-- Модальные окна -->
+    {% if is_host %}
+    <!-- Модалка добавления категории -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-folder-plus me-2"></i>Новая категория</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="addCategoryForm" onsubmit="return addCategory(event)">
+                    <div class="modal-body">
+                        <input type="hidden" name="subject_id" value="{{ subject_details.id if subject_details else '' }}">
+                        <div class="mb-3">
+                            <label class="form-label">Название категории *</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Описание</label>
+                            <textarea class="form-control" name="description" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Цвет</label>
+                            <input type="color" class="form-control" name="color" value="#3498db">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-custom">Создать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка добавления файла -->
+    <div class="modal fade" id="addFileModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-file-upload me-2"></i>Загрузить файл</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="addFileForm" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input type="hidden" name="subject_id" value="{{ subject_details.id if subject_details else '' }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Выберите файл *</label>
+                                <input type="file" class="form-control" name="file" required accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.zip">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Категория</label>
+                                <select class="form-select" name="category_id">
+                                    <option value="">Без категории</option>
+                                    {% for category in file_categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Описание</label>
+                                <textarea class="form-control" name="description" rows="3" placeholder="Опишите содержимое файла..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-custom">Загрузить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка быстрых действий -->
+    <div class="modal fade" id="quickActionsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-bolt me-2"></i>Быстрые действия</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+                        <a href="/add?subject={{ subject_name }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-plus-circle me-2 text-primary"></i>
+                            Добавить тест
+                        </a>
+                        <a href="/add_homework?subject={{ subject_name }}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-book me-2 text-success"></i>
+                            Добавить задание
+                        </a>
+                        <button class="list-group-item list-group-item-action" onclick="showAddCategoryModal()">
+                            <i class="fas fa-folder-plus me-2 text-warning"></i>
+                            Новая категория
+                        </button>
+                        <button class="list-group-item list-group-item-action" onclick="showAddFileModal()">
+                            <i class="fas fa-file-upload me-2 text-info"></i>
+                            Загрузить файл
+                        </button>
+                        <button class="list-group-item list-group-item-action" onclick="showEditModal()">
+                            <i class="fas fa-edit me-2 text-secondary"></i>
+                            Редактировать предмет
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Фильтрация работ
+        function filterWorks(filter) {
+            const works = document.querySelectorAll('.work-card');
+            works.forEach(work => {
+                const days = parseInt(work.dataset.days);
+                let show = true;
+                
+                switch(filter) {
+                    case 'today':
+                        show = days === 0;
+                        break;
+                    case 'soon':
+                        show = days >= 1 && days <= 7;
+                        break;
+                    case 'future':
+                        show = days > 7;
+                        break;
+                }
+                
+                work.style.display = show ? 'block' : 'none';
+            });
+            
+            // Обновляем активную кнопку
+            document.querySelectorAll('[onclick^="filterWorks"]').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(filter === 'all' ? 'Все' : 
+                                             filter === 'today' ? 'Сегодня' :
+                                             filter === 'soon' ? 'Скоро' : 'Будущие')) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Сортировка работ
+        function sortWorks(method) {
+            const container = document.getElementById('works-list');
+            const works = Array.from(container.getElementsByClassName('work-card'));
+            
+            works.sort((a, b) => {
+                const aDate = a.querySelector('.text-muted').textContent.split(' ')[1];
+                const bDate = b.querySelector('.text-muted').textContent.split(' ')[1];
+                const aType = a.dataset.type;
+                const bType = b.dataset.type;
+                
+                switch(method) {
+                    case 'date_asc':
+                        return new Date(aDate) - new Date(bDate);
+                    case 'date_desc':
+                        return new Date(bDate) - new Date(aDate);
+                    case 'type':
+                        return aType.localeCompare(bType);
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Переставляем элементы
+            works.forEach(work => container.appendChild(work));
+        }
+
+        // Скачивание календаря
+        function downloadCalendar(type, id = null) {
+            let url = `/calendar/${type}`;
+            if (id) {
+                url = `/calendar/${type}/${id}`;
+            } else if (type === 'all') {
+                url = `/calendar/all`;
+            }
+            
+            window.location.href = url;
+        }
+
+        {% if is_host %}
+        // Показать модальное окно быстрых действий
+        function showQuickActions() {
+            const modal = new bootstrap.Modal(document.getElementById('quickActionsModal'));
+            modal.show();
+        }
+
+        // Показать модальное окно добавления категории
+        function showAddCategoryModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
+            modal.show();
+        }
+
+        // Показать модальное окно добавления файла
+        function showAddFileModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addFileModal'));
+            modal.show();
+        }
+
+        // Добавление категории через AJAX
+        async function addCategory(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/api/subject/{{ subject_details.id if subject_details else 0 }}/add_category', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(Object.fromEntries(formData))
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Успех!',
+                        text: result.message,
+                        timer: 2000
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ошибка!',
+                        text: result.error
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Ошибка!',
+                    text: 'Ошибка сети'
+                });
+            }
+        }
+
+        // Удаление файла
+        async function deleteFile(fileId) {
+            const result = await Swal.fire({
+                title: 'Удалить файл?',
+                text: "Вы не сможете восстановить этот файл!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Удалить',
+                cancelButtonText: 'Отмена'
+            });
+            
+            if (result.isConfirmed) {
+                // Здесь должен быть AJAX запрос на удаление файла
+                // Пока просто перезагружаем страницу
+                location.reload();
+            }
+        }
+        {% endif %}
+
+        // Показать инструкцию по импорту календаря
+        function showCalendarInstructions() {
+            Swal.fire({
+                title: 'Как импортировать календарь?',
+                html: `
+                    <div class="text-start">
+                        <p><strong>Google Calendar:</strong></p>
+                        <ol>
+                            <li>Заходите на <a href="https://calendar.google.com" target="_blank">Google Calendar</a></li>
+                            <li>Слева нажмите "Другие календари" → "Импортировать"</li>
+                            <li>Выберите скачанный .ics файл</li>
+                            <li>Нажмите "Импортировать"</li>
+                        </ol>
+                        
+                        <p><strong>Outlook:</strong></p>
+                        <ol>
+                            <li>Откройте Outlook</li>
+                            <li>Файл → Открыть и экспортировать → Импорт/экспорт</li>
+                            <li>Выберите "Импорт файла календаря iCalendar (.ics)"</li>
+                            <li>Выберите скачанный файл</li>
+                        </ol>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Понятно'
+            });
+        }
+
+        // Редактирование предмета (заглушка)
+        function showEditModal() {
+            Swal.fire({
+                title: 'Редактировать предмет',
+                html: `
+                    <div class="mb-3">
+                        <label class="form-label">Название</label>
+                        <input type="text" class="form-control" value="{{ subject_name }}" id="subjectName">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Цвет</label>
+                        <input type="color" class="form-control" value="{{ subject_details.color if subject_details and subject_details.color else '#4361ee' }}" id="subjectColor">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание</label>
+                        <textarea class="form-control" id="subjectDescription" rows="3">{{ subject_details.description if subject_details and subject_details.description else '' }}</textarea>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Сохранить',
+                preConfirm: () => {
+                    // Здесь будет AJAX запрос на сохранение изменений
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            resolve();
+                        }, 1000);
+                    });
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire('Сохранено!', 'Изменения успешно сохранены.', 'success');
+                }
+            });
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            // Активируем первую вкладку
+            const firstTab = new bootstrap.Tab(document.querySelector('#works-tab'));
+            firstTab.show();
+        });
+    </script>
+</body>
+</html>

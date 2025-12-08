@@ -1,0 +1,126 @@
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">📁 Pievienot jaunu kategoriju</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCategoryForm">
+                    <div class="mb-3">
+                        <label class="form-label">Kategorijas nosaukums *</label>
+                        <input type="text" class="form-control" name="name" required placeholder="Piemēram: Lekcijas, Uzdevumi, Materiāli...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Apraksts</label>
+                        <textarea class="form-control" name="description" rows="3" placeholder="Īss kategorijas apraksts..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Krāsa</label>
+                        <div class="d-flex gap-2">
+                            <input type="color" class="form-control-color" name="color" value="#3498db" style="width: 60px; height: 38px;">
+                            <small class="text-muted align-self-center">Izvēlies kategorijas krāsu</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Atcelt</button>
+                <button type="button" class="btn btn-primary" onclick="addCategory()">Pievienot kategoriju</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">✏️ Rediģēt kategoriju</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editCategoryForm">
+                    <input type="hidden" id="editCategoryId" name="id">
+                    <div class="mb-3">
+                        <label class="form-label">Kategorijas nosaukums *</label>
+                        <input type="text" class="form-control" id="editCategoryName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Apraksts</label>
+                        <textarea class="form-control" id="editCategoryDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Krāsa</label>
+                        <input type="color" class="form-control-color" id="editCategoryColor" name="color" style="width: 60px; height: 38px;">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Atcelt</button>
+                <button type="button" class="btn btn-primary" onclick="updateCategory()">Saglabāt izmaiņas</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Subject Description Modal -->
+<div class="modal fade" id="editDescriptionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">✏️ Rediģēt priekšmeta "{{ subject_name }}" aprakstu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Priekšmeta apraksts</label>
+                    <textarea id="subjectDescription" class="form-control" rows="6" placeholder="Pievienot detalizētu priekšmeta aprakstu...">{% if subject_details and subject_details.description %}{{ subject_details.description }}{% endif %}</textarea>
+                    <div class="form-text">
+                        Šeit var pievienot priekšmeta aprakstu, mācību plānu, literatūras sarakstu vai citus svarīgus materiālus.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Atcelt</button>
+                <button type="button" class="btn btn-primary" onclick="updateSubjectDescription()">Saglabāt aprakstu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Files Modal -->
+<div class="modal fade" id="uploadFilesModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">📤 Augšupielādēt failus</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <small>⚠️ Failu augšupielāde šobrīd ir izstrādes stadijā. Drīz būs pieejama!</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Izvēlies kategoriju</label>
+                    <select class="form-select" disabled>
+                        <option>Izvēlies kategoriju...</option>
+                        {% for category in file_categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Izvēlies failus</label>
+                    <input type="file" class="form-control" multiple disabled>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Aizvērt</button>
+                <button type="button" class="btn btn-primary" disabled>Augšupielādēt</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container">
+    <div class="hero">
+        <h1>📝 Jauns mājasdarbs</h1>
+        <p>Pievieno jaunu mājasdarbu</p>
+    </div>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="subject">Priekšmets:</label>
+            <select id="subject" name="subject" required>
+                <option value="">Izvēlies priekšmetu...</option>
+                {% for subject in subjects %}
+                <option value="{{ subject.name }}">{{ subject.name }}</option>
+                {% else %}
+                <option value="" disabled>Vispirms pievieno priekšmetus!</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="title">Mājasdarba nosaukums:</label>
+            <input type="text" id="title" name="title" required 
+                   placeholder="Piemēram: Algebra uzdevumi, Ķīmijas eksperiments...">
+        </div>
+        
+        <div class="form-group">
+            <label for="date">Iesniegšanas datums:</label>
+            <input type="date" id="date" name="date" required 
+                   min="{{ min_date }}">
+        </div>
+
+        <div class="form-group">
+            <label for="time">Iesniegšanas laiks (neobligāti):</label>
+            <input type="time" id="time" name="time">
+            <small class="form-hint">Piemēram: 14:30. Ja nav norādīts, tiks lietots 23:59</small>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Uzdevuma apraksts:</label>
+            <textarea id="description" name="description" rows="6" 
+                     placeholder="Detalizēts uzdevuma apraksts, norādījumi, lapas mācību grāmatā, īpašas prasības..."></textarea>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">💾 Saglabāt mājasdarbu</button>
+            <a href="/homework" class="btn btn-danger">❌ Atcelt</a>
+        </div>
+    </form>
+</div>
+
+<style>
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

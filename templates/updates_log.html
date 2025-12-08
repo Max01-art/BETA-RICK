@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <h1>🔄 Update Log</h1>
+    <p>Sistēmas atjauninājumu un izmaiņu reģistrs</p>
+</div>
+
+<div class="updates-container">
+    {% if updates %}
+        {% for item in updates %}
+        <div class="test-card update-item">
+            <div class="update-header">
+                <div class="update-info">
+                    <h3 class="update-title">{{ item.title }}</h3>
+                    <p class="update-date">
+                        <strong>📅 Datums:</strong> {{ item.date }}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="update-content">
+                {{ item.content|replace('\n', '<br>')|safe }}
+            </div>
+            
+            <div class="update-meta">
+                Izveidots: {{ item.created_date }}
+                {% if item.updated_date %}
+                | Atjaunināts: {{ item.updated_date }}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="test-card empty-state">
+            <h3>📝 Vēl nav update ierakstu</h3>
+            <p>Update log ir tukšs. Gaidām, kad organizators pievienos pirmos atjauninājumus!</p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="actions">
+    <a href="/" class="btn">🏠 Atpakaļ uz galveno lapu</a>
+    {% if is_host %}
+    <a href="/updates" class="btn btn-success">📝 Pārvaldīt Updates</a>
+    {% endif %}
+</div>
+
+<style>
+.updates-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.update-item {
+    background: var(--card-bg);
+    border-left: 4px solid var(--primary);
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.update-item:hover {
+    transform: translateY(-3px);
+}
+
+.update-header {
+    margin-bottom: 1rem;
+}
+
+.update-title {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.update-date {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.update-content {
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+.update-meta {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-align: right;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .actions {
+        flex-direction: column;
+    }
+    
+    .actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

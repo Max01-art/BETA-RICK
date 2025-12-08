@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <h1>📋 Visi darbi</h1>
+    <p>Pilns saraksts ar visiem plānotajiem darbiem</p>
+</div>
+
+<!-- KALENDĀRA LEJUPLĀDES POGAS -->
+<div class="calendar-actions">
+    <a href="/calendar/all" class="btn btn-calendar">
+        📅 Lejupielādēt VISU kalendāru
+    </a>
+</div>
+
+{% if tests %}
+    {% for work in tests %}
+    <div class="test-card">
+        <div class="work-header">
+            <div class="work-info">
+                <h3>
+                    {{ work.subject }}
+                    <span class="type-badge type-{{ work.type|lower }}">{{ work.type }}</span>
+                </h3>
+                <p class="work-date">
+                    <strong>📅 Datums:</strong> {{ work.date }}
+                    {% if work.time and work.time != '23:59' %}
+                        <span class="time-badge">🕒 {{ work.time }}</span>
+                    {% endif %}
+                </p>
+                
+                <!-- ✅ PIEVIENO ŠO KODU - nodošanas termiņš -->
+                {% if work.due_date and work.due_date != work.date %}
+                <p class="work-date">
+                    <strong>📝 Nodošanas termiņš:</strong> {{ work.due_date }}
+                    <span class="due-date-badge">⏰ Līdz {{ work.due_date }}</span>
+                </p>
+                {% endif %}
+                
+                <!-- 🎯 JAUNĀS KRĀSAINĀS DIENU SKAITĪTĀJS -->
+                <div class="new-days-counter">
+                    <div class="days-badge days-{{ work.days_left }} {% if work.days_left > 30 %}large-number{% endif %}">
+                        {% if work.days_left == 0 %}
+                            🚨 ŠODIEN
+                        {% elif work.days_left < 0 %}
+                            🚨 NOKAVĒTS
+                        {% elif work.days_left == 1 %}
+                            ⚠️ RĪT
+                        {% elif work.days_left > 1 and work.days_left <= 7 %}
+                            ⏰ {{ work.days_left }} dienas
+                        {% elif work.days_left > 7 %}
+                            📅 {{ work.days_left }} dienas
+                        {% else %}
+                            ✅ Pabeigts
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if work.description %}
+                <div class="work-description">
+                    <strong>📝 Apraksts:</strong> {{ work.description }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="work-actions">
+                {% if work.type == 'Mājasdarbs' %}
+                    <a href="/calendar/homework/{{ work.id }}" class="btn btn-calendar">
+                        📅 Kalendārs
+                    </a>
+                {% else %}
+                    <a href="/calendar/test/{{ work.id }}" class="btn btn-calendar">
+                        📅 Kalendārs
+                    </a>
+                {% endif %}
+                {% if is_host %}
+                <a href="{% if work.type == 'Mājasdarbs' %}{{ url_for('delete_homework', hw_id=work.id) }}{% else %}{{ url_for('delete_test', test_id=work.id) }}{% endif %}" 
+                   class="btn btn-danger" 
+                   onclick="return confirm('Vai tiešām dzēst šo darbu?')">
+                   🗑️ Dzēst
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="test-card empty-state">
+        <h3>📝 Vēl nav pievienotu darbu</h3>
+        <p>
+            {% if is_host %}
+                Sāc ar jauna darba pievienošanu!
+            {% else %}
+                Gaidām, kad organizators pievienos darbus!
+            {% endif %}
+        </p>
+    </div>
+{% endif %}
+
+{% if is_host %}
+<div class="actions">
+    <a href="/add" class="btn btn-success">➕ Pievienot jaunu darbu</a>
+    <a href="/add_homework" class="btn btn-homework">📝 Pievienot mājasdarbu</a>
+</div>
+{% endif %}
+
+<div class="actions">
+    <a href="/" class="btn">🏠 Atpakaļ uz galveno lapu</a>
+    <a href="/homework" class="btn btn-homework">📝 Mājasdarbi</a>
+</div>
+
+<style>
+.work-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.work-info {
+    flex: 1;
+}
+
+.work-date {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.work-description {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+}
+
+.work-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.empty-state {
+    text-align: center;
+}
+
+/* NODOŠANAS TERMIŅA STILI */
+.due-date-badge {
+    background: linear-gradient(135deg, #8E44AD, #9B59B6);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-left: 0.5rem;
+}
+
+.work-date {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.time-badge {
+    background: var(--primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .work-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .work-actions {
+        flex-direction: row;
+        align-self: stretch;
+        justify-content: flex-end;
+    }
+}
+</style>
+{% endblock %}

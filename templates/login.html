@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container">
+    <div class="hero">
+        <h1>🔐 Pienākums</h1>
+        <p>Ieeja organizatora režīmā</p>
+    </div>
+
+    <form method="POST">
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <div class="form-group">
+            <label for="password">Parole:</label>
+            <input type="password" id="password" name="password" required 
+                   placeholder="Ievadi organizatora paroli">
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn">🔑 Pieteikties</button>
+            <a href="/" class="btn btn-danger">🏠 Atpakaļ</a>
+        </div>
+    </form>
+</div>
+
+<style>
+.form-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

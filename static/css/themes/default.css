@@ -1,0 +1,24 @@
+/* Default theme - light */
+:root[data-theme="default"] {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --text-color: #212529;
+    --bg-color: #ffffff;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --border-color: #dee2e6;
+}
+
+[data-theme="default"] body {
+    color: var(--text-color);
+}
+
+[data-theme="default"] .card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+[data-theme="default"] .navbar,
+[data-theme="default"] footer {
+    background: rgba(33, 37, 41, 0.95) !important;
+}

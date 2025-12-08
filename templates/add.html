@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container">
+    <div class="hero">
+        <h1>➕ Pievienot darbu</h1>
+        <p>Izvēlies priekšmetu un aizpildi informāciju</p>
+    </div>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="subject">Priekšmets:</label>
+            <select id="subject" name="subject" required>
+                <option value="">Izvēlies priekšmetu...</option>
+                {% for subject in subjects %}
+                <option value="{{ subject.name }}">{{ subject.name }}</option>
+                {% else %}
+                <option value="" disabled>Vispirms pievieno priekšmetus!</option>
+                {% endfor %}
+            </select>
+            {% if not subjects and is_host %}
+            <p class="form-hint error">
+                ❌ Vispirms pievieno priekšmetus! 
+                <a href="/add_subject">Pievienot priekšmetu</a>
+            </p>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="type">Darba veids:</label>
+            <select id="type" name="type" required>
+                <option value="">Izvēlies darba veidu...</option>
+                <option value="Kontroldarbs">Kontroldarbs</option>
+                <option value="Tests">Tests</option>
+                <option value="Eksāmens">Eksāmens</option>
+                <option value="Starpeksāmens">Starpeksāmens</option>
+                <option value="LD">Laboratorijas darbs (LD)</option>
+                <option value="MD">Mājasdarbs (MD)</option>
+                <option value="ND">Nodarbību darbs (ND)</option>
+                <option value="Prezentācija">Prezentācija</option>
+                <option value="Projekts">Projekts</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="date">Datums:</label>
+            <input type="date" id="date" name="date" required 
+                   min="{{ min_date }}">
+        </div>
+        
+        <div class="form-group">
+            <label for="time">Iesniegšanas laiks (neobligāti):</label>
+            <input type="time" id="time" name="time">
+            <small class="form-hint">Ja nav norādīts, tiks lietots 23:59</small>
+        </div>
+
+        <div class="form-group">
+            <label for="due_date">📅 Nodešanas termiņš (ja atšķiras):</label>
+            <input type="date" id="due_date" name="due_date" class="form-control">
+            <small class="form-hint">Ievadiet tikai ja nodešanas datums atšķiras no pārbaudes datuma</small>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Papildus informācija (neobligāti):</label>
+            <textarea id="description" name="description" rows="4" 
+                    placeholder="Tēmas, norādījumi, īpašas prasības..."></textarea>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">💾 Saglabāt darbu</button>
+            <a href="/" class="btn btn-danger">❌ Atcelt</a>
+        </div>
+    </form>
+</div>
+
+<style>
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-hint {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-hint.error {
+    color: var(--danger);
+}
+
+.form-hint a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.form-hint a:hover {
+    text-decoration: underline;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+/* PAPILDUS DIENU POGU STILI */
+.day-badge.overdue {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border-color: #c82333;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* DATUMA UN LAIKA RĀDĪŠANA */
+.work-date {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.time-badge {
+    background: var(--primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+</style>
+{% endblock %}

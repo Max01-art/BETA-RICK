@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontroldarbu Grafiks</title>
+    <link rel="icon" href="/static/images/logo.png">
+    <link rel="apple-touch-icon" href="/static/images/logo.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2E5BFF;
+            --secondary: #00A3FF;
+            --accent: #00C9A7;
+            --success: #00C851;
+            --warning: #FF9500;
+            --danger: #FF3B30;
+            --purple: #8E44AD;
+            --neutral: #6C757D;
+        }
+        /* PIEVIENO ŠO CSS starpeksāmenim */
+        .type-starpeksāmens {
+            background: linear-gradient(135deg, #e9e5ebff, #cdc5d1ff);
+            color: white;
+        }
+        /* 🔆 GAISKĀ TEMA */
+        .theme-light {
+            --bg-primary: #F8F9FA;
+            --bg-secondary: #FFFFFF;
+            --bg-gradient: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 50%, #E8F5E8 100%);
+            --text-primary: #212529;
+            --text-secondary: #495057;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(46, 91, 255, 0.15);
+            --nav-bg: rgba(255, 255, 255, 0.98);
+            --nav-text: #212529;
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --hover-shadow: rgba(0, 0, 0, 0.12);
+        }
+        /* 🌙 TUMŠĀ TEMA */
+        .theme-dark {
+            --bg-primary: #121212;
+            --bg-secondary: #1E1E1E;
+            --bg-gradient: linear-gradient(135deg, #0D1B2A 0%, #1B263B 50%, #415A77 100%);
+            --text-primary: #E9ECEF;
+            --text-secondary: #ADB5BD;
+            --card-bg: rgba(30, 30, 30, 0.95);
+            --card-border: rgba(46, 91, 255, 0.3);
+            --nav-bg: rgba(18, 18, 18, 0.98);
+            --nav-text: #E9ECEF;
+            --input-bg: rgba(255, 255, 255, 0.12);
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --hover-shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+/* 🔆 GAISKĀ TEMA - REĀLI MĀKOŅI UN SAULĪTE */
+.theme-light::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #87CEEB 0%, #98D8E8 50%, #B0E0E6 100%);
+    z-index: -1;
+}
+
+/* SAULĪTE */
+.sun {
+    position: fixed;
+    top: 10%;
+    right: 10%;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #FFD700, #FF8C00);
+    box-shadow: 
+        0 0 60px #FFA500,
+        0 0 100px rgba(255, 165, 0, 0.3);
+    z-index: -1;
+    animation: sunGlow 4s infinite ease-in-out;
+}
+
+@keyframes sunGlow {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 
+            0 0 60px #FFA500,
+            0 0 100px rgba(255, 165, 0, 0.3);
+    }
+    50% { 
+        transform: scale(1.05);
+        box-shadow: 
+            0 0 80px #FFD700,
+            0 0 120px rgba(255, 215, 0, 0.4);
+    }
+}
+
+/* REĀLI MĀKOŅI - NEAPALĪGI */
+.real-cloud {
+    position: fixed;
+    background: 
+        radial-gradient(ellipse at 20% 40%, rgba(255, 255, 255, 0.9) 0%, transparent 60%),
+        radial-gradient(ellipse at 60% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 60%, rgba(255, 255, 255, 0.7) 0%, transparent 50%),
+        radial-gradient(ellipse at 40% 70%, rgba(255, 255, 255, 0.6) 0%, transparent 65%);
+    border-radius: 100px 150px 120px 80px;
+    opacity: 0.9;
+    z-index: -1;
+    animation: cloudFloat 40s infinite linear;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
+}
+
+/* LIELAIS MĀKONIS */
+.real-cloud-1 {
+    width: 250px;
+    height: 100px;
+    top: 15%;
+    left: -200px;
+    animation-duration: 50s;
+    border-radius: 120px 180px 150px 100px;
+}
+
+/* VIDĒJS MĀKONIS */
+.real-cloud-2 {
+    width: 180px;
+    height: 70px;
+    top: 30%;
+    right: -150px;
+    animation-duration: 45s;
+    animation-delay: -10s;
+    border-radius: 80px 120px 100px 60px;
+}
+
+/* MAZAIS MĀKONIS */
+.real-cloud-3 {
+    width: 120px;
+    height: 50px;
+    bottom: 20%;
+    left: -100px;
+    animation-duration: 60s;
+    animation-delay: -20s;
+    border-radius: 60px 90px 80px 40px;
+}
+
+/* MĀKOŅU KUSTĪBA */
+@keyframes cloudFloat {
+    0% { 
+        transform: translateX(-300px) translateY(0px);
+        opacity: 0.8;
+    }
+    25% { 
+        transform: translateX(25vw) translateY(-5px);
+        opacity: 0.9;
+    }
+    50% { 
+        transform: translateX(50vw) translateY(3px);
+        opacity: 0.85;
+    }
+    75% { 
+        transform: translateX(75vw) translateY(-3px);
+        opacity: 0.9;
+    }
+    100% { 
+        transform: translateX(calc(100vw + 300px)) translateY(0px);
+        opacity: 0.8;
+    }
+}
+
+/* MĀKOŅU APGAISMOJUMS */
+.real-cloud::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 30%),
+        radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.2) 0%, transparent 25%);
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+/* 🌙 TUMŠĀ TEMA - BEZ MĀKOŅIEM */
+.theme-dark::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(46, 91, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 163, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(0, 201, 167, 0.08) 0%, transparent 50%),
+        linear-gradient(135deg, #0D1B2A 0%, #1B263B 50%, #415A77 100%);
+    z-index: -1;
+}
+
+/* Paslēpj mākoņus un sauli tumšajā tēmā */
+.theme-dark .real-cloud,
+.theme-dark .sun {
+    display: none;
+}
+
+        /* ZVAIGŽŅU ANIMĀCIJA TUMŠAJAM TĒMAM */
+        .theme-dark::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(46, 91, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 163, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 201, 167, 0.08) 0%, transparent 50%),
+                linear-gradient(135deg, #0D1B2A 0%, #1B263B 50%, #415A77 100%);
+            z-index: -1;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .theme-dark .stars {
+            opacity: 1;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* PROGRESU JOSLA VISIEM PRIEKŠMETIEM */
+        .subject-progress {
+            margin: 15px 0;
+        }
+
+        .progress-container {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #ddd;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            border-radius: 8px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
+        }
+        /* MĒNESNĪCA ANIMĀCIJA */
+        .moon {
+            position: fixed;
+            top: 10%;
+            right: 10%;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #f5f5f5, #e0e0e0);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 1s ease;
+            animation: moonGlow 8s infinite ease-in-out;
+        }
+
+        .theme-dark .moon {
+            opacity: 1;
+        }
+
+        @keyframes moonGlow {
+            0%, 100% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 60px rgba(255, 255, 255, 0.5); }
+        }
+
+        /* ========== MINI TIMER STYLES ========== */
+        .timer-floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(46, 91, 255, 0.4);
+            border: none;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .timer-floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(46, 91, 255, 0.6);
+        }
+
+        .timer-modal {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 280px;
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 15px 40px var(--shadow-color);
+            z-index: 1001;
+            backdrop-filter: blur(20px);
+            display: none;
+        }
+
+        .timer-modal.active {
+            display: block;
+            animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50%) translateX(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0) scale(1);
+            }
+        }
+
+        .timer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .timer-header h3 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .timer-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 4px;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .timer-close:hover {
+            background: var(--danger);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .timer-display {
+            font-size: 2rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+            text-align: center;
+            margin: 1rem 0;
+            background: var(--bg-secondary);
+            padding: 0.8rem;
+            border-radius: 12px;
+            border: 2px solid var(--card-border);
+            box-shadow: inset 0 3px 10px var(--shadow-color);
+        }
+
+        .timer-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .timer-controls .btn {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .timer-stats {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            font-size: 0.85rem;
+        }
+
+        .timer-stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.6rem;
+            padding: 0.3rem 0;
+        }
+
+        .timer-stat-item:not(:last-child) {
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .timer-stat-value {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 0.9rem;
+            background: var(--card-bg);
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .timer-modal {
+                width: 260px;
+                right: 10px;
+            }
+            
+            .timer-floating-btn {
+                bottom: 15px;
+                right: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+            
+            .timer-display {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .timer-modal {
+                width: 90%;
+                right: 5%;
+                left: 5%;
+            }
+        }
+
+        /* PĀRĒJIE STILI */
+        .navbar {
+            background: var(--nav-bg);
+            backdrop-filter: blur(25px);
+            padding: 1rem 0;
+            box-shadow: 0 4px 30px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--card-border);
+            transition: all 0.4s ease;
+            overflow: visible; /* ✅ LABOTS - atļauj overflow */
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* ✅ LABOTS - ļauj wrap mobilajā */
+        }
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--nav-text);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap; /* ✅ LABOTS - ļauj wrap */
+        }
+        
+        .nav-links a {
+            color: var(--nav-text);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+        
+        .test-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px var(--shadow-color);
+            border-left: 5px solid var(--primary);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            color: var(--text-primary);
+        }
+        
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px var(--hover-shadow);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(46, 91, 255, 0.3);
+        }
+        
+        .btn:hover {
+            background: #1E4BD6;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(46, 91, 255, 0.4);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: #D32F2F;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #00A843;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+        }
+
+        .btn-warning:hover {
+            background: #E08600;
+        }
+
+        /* LOADING SCREEN */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--card-border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* SKAISTAS DIENU POGAS */
+        .days-panel {
+            margin: 12px 0;
+        }
+
+        .day-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .day-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .day-badge.urgent {
+            background: linear-gradient(135deg, #ff4757, #ff3838);
+            color: white;
+            border-color: #ff3838;
+        }
+
+        .day-badge.warning {
+            background: linear-gradient(135deg, #ff9f1a, #ff7f00);
+            color: white;
+            border-color: #ff7f00;
+        }
+
+        .day-badge.soon {
+            background: linear-gradient(135deg, #2E5BFF, #1E4BD6);
+            color: white;
+            border-color: #1E4BD6;
+        }
+
+        .day-badge.normal {
+            background: linear-gradient(135deg, #00C851, #00A843);
+            color: white;
+            border-color: #00A843;
+        }
+
+        .day-badge.completed {
+            background: linear-gradient(135deg, #6C757D, #495057);
+            color: white;
+            border-color: #495057;
+        }
+        /* DIENU SKAITA RĀDĪTĀJS */
+        .days-counter {
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 2px solid var(--card-border);
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .days-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .days-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        /* THEME SWITCHER */
+        .theme-switcher {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            color: var(--nav-text);
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .theme-switcher:hover {
+            background: rgba(46, 91, 255, 0.1);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .timer-modal {
+                width: 300px;
+                right: 20px;
+            }
+            
+            .timer-floating-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .timer-display {
+                font-size: 2rem;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .timer-modal {
+                width: 90%;
+                right: 5%;
+                left: 5%;
+            }
+        }
+                /* ONLINE COUNTER STYLES */
+        .online-counter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            border: 2px solid var(--card-border);
+            margin-top: 10px;
+        }
+
+        .online-dot {
+            width: 10px;
+            height: 10px;
+            background: #00C851;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .online-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .online-count {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        /* HAMBURGER MENU STYLES */
+.hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--nav-text);
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* MOBILE MENU STYLES */
+@media (max-width: 768px) {
+    .hamburger-btn {
+        display: block;
+        position: absolute;
+        right: 15px;
+        top: 15px;
+    }
+    
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background: var(--nav-bg);
+        position: absolute;
+        top: 100%;
+        left: 0;
+        box-shadow: 0 4px 20px var(--shadow-color);
+        z-index: 1001;
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+    
+    .nav-links.mobile-open {
+        display: flex;
+    }
+    
+    .nav-links a {
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        text-align: center;
+        background: var(--bg-secondary);
+    }
+    
+    .theme-switcher {
+        margin-top: 0.5rem;
+        justify-content: center;
+    }
+}
+
+/* EPASTA PAZIŅOJUMA SISTĒMAS STILI */
+.notification-promo {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.notification-promo::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: shine 3s infinite linear;
+}
+
+@keyframes shine {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.notification-promo h3 {
+    color: white;
+    margin-bottom: 0.8rem;
+    position: relative;
+    z-index: 1;
+}
+
+.notification-promo p {
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.notification-stats {
+    background: rgba(255,255,255,0.15);
+    padding: 0.8rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 1;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.95);
+}
+
+.stat-item strong {
+    color: white;
+    background: rgba(255,255,255,0.2);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.notification-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.feature {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.9);
+    padding: 0.3rem 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .notification-features {
+        grid-template-columns: 1fr;
+    }
+    
+    .notification-stats {
+        padding: 0.6rem;
+    }
+}
+
+/* JAUNIE DIENU SKAITA STILI - LIELĀKI UN KRĀSĪGAKI */
+.new-days-counter {
+    margin: 1.2rem 0;
+    text-align: center;
+}
+
+.days-badge {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    transition: all 0.4s ease;
+    border: 3px solid rgba(255,255,255,0.3);
+    min-width: 140px;
+    text-align: center;
+}
+
+.days-badge:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* KRĀSU GRADIENTI DAŽĀDIEM DIENU SKAITIEM */
+.days-0 {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    animation: urgent-pulse 1.5s infinite;
+}
+
+.days-1 {
+    background: linear-gradient(135deg, #ff9f43, #ff9f1a);
+    animation: warning-pulse 2s infinite;
+}
+
+.days-2 {
+    background: linear-gradient(135deg, #54a0ff, #2e86de);
+}
+
+.days-3 {
+    background: linear-gradient(135deg, #48dbfb, #0abde3);
+}
+
+.days-4 {
+    background: linear-gradient(135deg, #1dd1a1, #10ac84);
+}
+
+.days-5 {
+    background: linear-gradient(135deg, #00d2d3, #01a3a4);
+}
+
+.days-6 {
+    background: linear-gradient(135deg, #5f27cd, #341f97);
+}
+
+.days-7 {
+    background: linear-gradient(135deg, #c56cf0, #8e44ad);
+}
+
+.days-8, .days-9, .days-10 {
+    background: linear-gradient(135deg, #ff9ff3, #f368e0);
+}
+
+.days-11, .days-12, .days-13, .days-14 {
+    background: linear-gradient(135deg, #fdcb6e, #f39c12);
+}
+
+.days-15, .days-16, .days-17, .days-18, .days-19, .days-20 {
+    background: linear-gradient(135deg, #e66767, #ea8685);
+}
+
+.days-21, .days-22, .days-23, .days-24, .days-25, .days-26, .days-27, .days-28, .days-29, .days-30 {
+    background: linear-gradient(135deg, #778beb, #546de5);
+}
+
+.days-31, .days-32, .days-33, .days-34, .days-35, .days-36, .days-37, .days-38, .days-39, .days-40 {
+    background: linear-gradient(135deg, #cf6a87, #c44569);
+}
+/* ANIMĀCIJAS */
+@keyframes urgent-pulse {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+    }
+    50% { 
+        transform: scale(1.08);
+        box-shadow: 0 8px 30px rgba(255, 107, 107, 0.8);
+    }
+}
+
+@keyframes warning-pulse {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 6px 20px rgba(255, 159, 67, 0.6);
+    }
+    50% { 
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(255, 159, 67, 0.8);
+    }
+}
+
+/* ĪPAŠI LIELI SKAITĻI */
+.days-badge.large-number {
+    font-size: 1.3rem;
+    padding: 14px 28px;
+    min-width: 160px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .days-badge {
+        padding: 10px 20px;
+        font-size: 1rem;
+        min-width: 120px;
+    }
+    
+    .days-badge.large-number {
+        font-size: 1.1rem;
+        padding: 12px 24px;
+        min-width: 140px;
+    }
+}
+
+/* Nodošanas termiņa stili */
+.due-date-badge {
+    background: linear-gradient(135deg, #8E44AD, #9B59B6);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-left: 0.5rem;
+}
+
+.work-date {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+    </style>
+</head>
+<body class="theme-light">
+    <!-- LOADING SCREEN -->
+    {% if show_loading %}
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>Kontroldarbu Grafiks</h2>
+            <p>Ielādē mācību priekus... 📚</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- PĒRKONA MĀKOŅI UN ZIBENS -->
+    <div class="sun"></div>
+    
+    <div class="real-cloud real-cloud-1"></div>
+    <div class="real-cloud real-cloud-2"></div>
+    <div class="real-cloud real-cloud-3"></div>
+    
+    <div class="lightning lightning-1"></div>
+    <div class="lightning lightning-2"></div>
+    <div class="lightning lightning-3"></div>
+
+    <!-- TUMŠĀS TĒMAS ELEMENTI -->
+    <div class="stars" id="stars"></div>
+    <div class="moon"></div>
+
+    <!-- MINI TIMER BUTTON & MODAL -->
+    {% if not is_host %}
+    <button class="timer-floating-btn" onclick="toggleTimerModal()">⏱️</button>
+    
+    <div id="timerModal" class="timer-modal">
+        <div class="timer-header">
+            <h3>⏱️ Studiju taimeris</h3>
+            <button class="timer-close" onclick="toggleTimerModal()">✕</button>
+        </div>
+        
+        <div class="timer-display">
+            <span id="timerHours">00</span>:<span id="timerMinutes">00</span>:<span id="timerSeconds">00</span>
+        </div>
+        
+        <div class="timer-controls">
+            <button onclick="startTimer()" class="btn btn-success">▶️ Sākt</button>
+            <button onclick="pauseTimer()" class="btn btn-warning">⏸️ Apturēt</button>
+            <button onclick="resetTimer()" class="btn btn-danger">⏹️ Apturēt</button>
+        </div>
+        
+        <div class="timer-stats">
+            <div class="timer-stat-item">
+                <span>📅 Šodien:</span>
+                <span class="timer-stat-value" id="todayTime">0h 0m</span>
+            </div>
+            <div class="timer-stat-item">
+                <span>📊 Kopā:</span>
+                <span class="timer-stat-value" id="totalTime">0h 0m</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-logo">📚 Kontroldarbu Grafiks</div>
+        
+        <!-- Hamburger ikona mobilajam -->
+        <button class="hamburger-btn" onclick="toggleMobileMenu()">
+            ☰
+        </button>
+        
+        <!-- Desktop navigation -->
+        <div class="nav-links" id="navLinks">
+            <a href="{{ url_for('index') }}">🏠 Galvenā</a>
+            <a href="{{ url_for('all_tests') }}">📋 Visi darbi</a>
+            <a href="{{ url_for('homework') }}">📝 Mājasdarbi</a>
+            <a href="{{ url_for('updates_log') }}">🔄 Updates</a>
+            <a href="{{ url_for('notifications') }}">🔔 Paziņojumi</a>
+
+            <!-- THEME SWITCHER -->
+            <div class="theme-switcher" onclick="toggleTheme()">
+                <span class="theme-icon">🌙</span>
+                <span class="theme-text">Tumšs</span>
+            </div>
+
+            {% if session.get('is_host') %}
+                <a href="{{ url_for('manage_updates') }}">📝 Pārvaldīt Updates</a>
+                <a href="{{ url_for('add_test') }}">➕ Pievienot darbu</a>
+                <a href="{{ url_for('add_homework') }}">📝 Mājasdarbs</a>
+                <a href="{{ url_for('logout') }}">🚪 Iziet</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">🔐 Pienākums</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- FOOTER -->
+    {% include 'footer.html' %}
+
+    <script>
+        // ================= TIMER FUNCTIONALITY =================
+        let timerInterval;
+        let seconds = 0;
+        let isRunning = false;
+        let lastSaveTime = 0;
+
+        function formatTime(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const secs = totalSeconds % 60;
+            return `${hours}h ${minutes.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+        }
+
+        function updateDisplay() {
+            const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            
+            document.getElementById('timerHours').textContent = hours;
+            document.getElementById('timerMinutes').textContent = minutes;
+            document.getElementById('timerSeconds').textContent = secs;
+        }
+
+        // Ielādēt no servera
+        async function loadTimerStats() {
+            try {
+                const response = await fetch('/api/timer/stats');
+                const data = await response.json();
+                
+                if (data.success && data.stats) {
+                    const stats = data.stats;
+                    document.getElementById('todayTime').textContent = formatTime(stats.today_seconds);
+                    document.getElementById('totalTime').textContent = formatTime(stats.total_seconds);
+                } else {
+                    console.error('Invalid response from timer stats:', data);
+                }
+            } catch (error) {
+                console.error('Error loading timer stats:', error);
+                // Rāda 0, ja nevar ielādēt
+                document.getElementById('todayTime').textContent = '0h 00m 00s';
+                document.getElementById('totalTime').textContent = '0h 00m 00s';
+            }
+        }
+
+        // Saglabāt uz serveri
+        async function saveTimerData() {
+            try {
+                const response = await fetch('/api/timer/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ seconds: seconds })
+                });
+                
+                if (response.ok) {
+                    console.log('Timer data saved successfully');
+                    await loadTimerStats(); // Ielādē jauno statistiku
+                }
+            } catch (error) {
+                console.error('Error saving timer data:', error);
+                // Fallback: saglabā lokāli
+                localStorage.setItem('timerBackup', JSON.stringify({
+                    seconds: seconds,
+                    timestamp: Date.now()
+                }));
+            }
+        }
+
+        async function loadTimerData() {
+            // Ielādē statistiku no servera
+            await loadTimerStats();
+            
+            // Mēģina atjaunot no lokālā backup
+            const backup = localStorage.getItem('timerBackup');
+            if (backup) {
+                try {
+                    const backupData = JSON.parse(backup);
+                    const backupAge = Date.now() - backupData.timestamp;
+                    
+                    // Izmanto backup tikai ja tas ir jaunāks par 1 stundu
+                    if (backupAge < 3600000) {
+                        seconds = backupData.seconds;
+                        updateDisplay();
+                        console.log('Timer data restored from backup');
+                    }
+                    
+                    // Notīra backup pēc atjaunošanas
+                    localStorage.removeItem('timerBackup');
+                } catch (e) {
+                    console.error('Error restoring backup:', e);
+                }
+            }
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    updateDisplay();
+                    
+                    // Saglabā ik pēc 30 sekundēm
+                    if (seconds - lastSaveTime >= 30) {
+                        saveTimerData();
+                        lastSaveTime = seconds;
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            if (isRunning) {
+                isRunning = false;
+                clearInterval(timerInterval);
+                saveTimerData(); // Saglabā uzreiz pēc pauzēšanas
+            }
+        }
+
+        function resetTimer() {
+            const confirmReset = confirm('Vai tiešām vēlaties apturēt taimeri? Visi šīs sesijas dati tiks dzēsti.');
+            if (confirmReset) {
+                isRunning = false;
+                clearInterval(timerInterval);
+                seconds = 0;
+                updateDisplay();
+                saveTimerData(); // Saglabā resetoto stāvokli
+            }
+        }
+
+        function toggleTimerModal() {
+            const modal = document.getElementById('timerModal');
+            modal.classList.toggle('active');
+        }
+
+        // Aizver taimera modālu, ja klikšķina ārpus tā
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('timerModal');
+            const btn = document.querySelector('.timer-floating-btn');
+            
+            if (modal && modal.classList.contains('active') && 
+                !modal.contains(event.target) && 
+                !btn.contains(event.target)) {
+                modal.classList.remove('active');
+            }
+        });
+    // ================= REAL-TIME ONLINE COUNTER =================
+    const socket = io();
+    
+    // Savienojuma izveide
+    socket.on('connect', function() {
+        console.log('✅ Savienots ar serveri');
+    });
+    
+    // Online skaita atjaunināšana
+    socket.on('online_count_update', function(data) {
+        const onlineCountElement = document.getElementById('onlineCount');
+        if (onlineCountElement) {
+            onlineCountElement.textContent = data.count;
+            
+            // Pievieno animāciju
+            onlineCountElement.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                onlineCountElement.style.transform = 'scale(1)';
+            }, 300);
+        }
+    });
+    
+    // Pārrauga lapas aizvēršanu
+    window.addEventListener('beforeunload', function() {
+        socket.disconnect();
+    });
+        // ================= THEME FUNCTIONALITY =================
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.querySelector('.theme-icon');
+            const themeText = document.querySelector('.theme-text');
+            
+            if (body.classList.contains('theme-light')) {
+                body.classList.remove('theme-light');
+                body.classList.add('theme-dark');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Gaišs';
+                createStars();
+            } else {
+                body.classList.remove('theme-dark');
+                body.classList.add('theme-light');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Tumšs';
+            }
+            
+            localStorage.setItem('theme', body.classList.contains('theme-dark') ? 'dark' : 'light');
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.body;
+            const themeIcon = document.querySelector('.theme-icon');
+            const themeText = document.querySelector('.theme-text');
+            
+            if (savedTheme === 'dark') {
+                body.classList.remove('theme-light');
+                body.classList.add('theme-dark');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Gaišs';
+                createStars();
+            } else {
+                body.classList.remove('theme-dark');
+                body.classList.add('theme-light');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Tumšs';
+            }
+        }
+
+        // Zvaigžņu ģenerators tumšajai tēmai
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            if (!starsContainer) return;
+            
+            starsContainer.innerHTML = '';
+            
+            const starCount = 150;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const size = Math.random() * 3 + 1;
+                const delay = Math.random() * 5;
+                
+                star.style.left = `${left}%`;
+                star.style.top = `${top}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.animationDelay = `${delay}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }      
+        // MOBILE MENU FUNCTIONALITY
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('mobile-open');
+        }
+
+        // Aizver mobile menu, ja klikšķina ārpus tā
+        document.addEventListener('click', function(event) {
+            const navLinks = document.getElementById('navLinks');
+            const hamburgerBtn = document.querySelector('.hamburger-btn');
+            
+            if (navLinks.classList.contains('mobile-open') && 
+                !navLinks.contains(event.target) && 
+                !hamburgerBtn.contains(event.target)) {
+                navLinks.classList.remove('mobile-open');
+            }
+        });
+        // Reālā laika atjaunināšana
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('lv-LV', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            const timeElement = document.getElementById('currentTime');
+            if (timeElement) {
+                timeElement.textContent = timeString;
+            }
+        }
+
+        // Atjaunina laiku ik pēc 30 sekundēm
+        setInterval(updateCurrentTime, 30000);
+
+        // Palaist uzreiz
+        updateCurrentTime();
+        // ================= LOADING SCREEN =================
+        {% if show_loading %}
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(function() {
+                        loadingScreen.style.display = 'none';
+                    }, 500);
+                }
+            }, 1000);
+        });
+        {% endif %}
+
+        // ================= NOTIFICATION STATS =================
+async function loadNotificationStats() {
+    try {
+        const response = await fetch('/api/notification_stats');
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('registeredEmails').textContent = data.stats.registered_emails;
+            document.getElementById('activeSubscriptions').textContent = data.stats.active_subscriptions;
+        }
+    } catch (error) {
+        console.error('Kļūda ielādējot paziņojumu statistiku:', error);
+    }
+}
+
+
+        // ================= INITIALIZATION =================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            {% if not is_host %}
+            loadTimerData();
+            {% endif %}
+            loadNotificationStats();
+        });
+
+        // Saglabā taimera datus pirms aizvēršanas
+        window.addEventListener('beforeunload', function() {
+            if (seconds > 0) {
+                navigator.sendBeacon('/api/timer/save', JSON.stringify({ seconds: seconds }));
+            }
+        });
+    </script>
+</body>
+</html>

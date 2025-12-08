@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <h1>📤 Importēt no .ics faila</h1>
+    <p>Importē darbus no Outlook, Google Calendar vai cita .ics faila</p>
+</div>
+
+<div class="import-container">
+    {% if error %}
+    <div class="error-message">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    {% if success %}
+    <div class="success-message">
+        {{ success }}
+    </div>
+    {% endif %}
+
+    <div class="test-card">
+        <h3>1. Eksportē no sava kalendāra</h3>
+        
+        <div class="instructions">
+            <p><strong>📅 Outlook (tīmekļa versija):</strong></p>
+            <ol>
+                <li>Atver <a href="https://outlook.office.com" target="_blank">Outlook</a></li>
+                <li>Dodies uz Kalendāru</li>
+                <li>Iestatījumi → Eksportēt kalendāru</li>
+                <li>Lejupielādē .ics failu</li>
+            </ol>
+            
+            <p><strong>📅 Google Calendar:</strong></p>
+            <ol>
+                <li>Atver Google Calendar</li>
+                <li>Iestatījumi → Eksports</li>
+                <li>Lejupielādē .zip ar .ics failiem</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h3>2. Augšupielādē .ics failu</h3>
+        
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="ics_file">Izvēlies .ics failu:</label>
+                <input type="file" id="ics_file" name="ics_file" accept=".ics" required
+                       class="file-input">
+                <p class="file-hint">
+                    Atbalstīti: Outlook, Google Calendar, Apple Calendar .ics faili
+                </p>
+            </div>
+            
+            <div class="import-info">
+                <p><strong>ℹ️ Automātiskā apstrāde:</strong></p>
+                <ul>
+                    <li><strong>LD</strong> - Laboratorijas darbi</li>
+                    <li><strong>MD/ND</strong> - Mājasdarbi</li>
+                    <li><strong>Prezentācija</strong> - Prezentācijas</li>
+                    <li><strong>Kontroldarbs/Tests/Eksāmens</strong> - Pārbaudes darbi</li>
+                </ul>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">📤 Importēt</button>
+                <a href="/" class="btn btn-danger">❌ Atcelt</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="test-card">
+        <h3>3. Ko importēs?</h3>
+        
+        <div class="import-types">
+            <p><strong>✅ Automātiski atpazīs:</strong></p>
+            <ul>
+                <li>Laboratorijas darbs → <span class="type-badge type-ld">LD</span></li>
+                <li>Mājasdarbs → <span class="type-badge type-md">MD</span></li>
+                <li>Prezentācija → <span class="type-badge type-prezentacija">Prezentācija</span></li>
+                <li>Kontroldarbs → <span class="type-badge type-kontroldarbs">Kontroldarbs</span></li>
+                <li>Tests → <span class="type-badge type-tests">Tests</span></li>
+                <li>Eksāmens → <span class="type-badge type-eksāmens">Eksāmens</span></li>
+                <li>Starpeksāmens → <span class="type-badge type-starpeksāmens">Starpeksāmens</span></li> 
+            </ul>
+            
+            <p class="import-note">
+                <strong>⚠️ Pievērs uzmanību:</strong> Notikuma nosaukumā jābūt atslēgvārdiem 
+                (piemēram: "Matemātika - laboratorijas darbs")
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+.import-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.instructions {
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.instructions ol {
+    margin: 0.5rem 0 0 1rem;
+}
+
+.instructions a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.instructions a:hover {
+    text-decoration: underline;
+}
+
+.file-input {
+    padding: 8px;
+    border: 2px dashed var(--primary);
+}
+
+.file-hint {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.import-info {
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.import-types {
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.import-types ul {
+    margin: 0.5rem 0 0 1rem;
+}
+
+.import-types li {
+    margin-bottom: 0.5rem;
+}
+
+.import-note {
+    margin: 1rem 0 0 0;
+    font-size: 0.9rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
