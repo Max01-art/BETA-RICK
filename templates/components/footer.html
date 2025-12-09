@@ -1,0 +1,225 @@
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-content">
+            <!-- Left section -->
+            <div class="footer-section">
+                <h4>{{ app_name }}</h4>
+                <p class="footer-description">
+                    Kontroldarbu un mājasdarbu organizēšanas sistēma
+                </p>
+                <p class="footer-version">
+                    Versija {{ app_version }}
+                </p>
+            </div>
+            
+            <!-- Links section -->
+            <div class="footer-section">
+                <h5>Saites</h5>
+                <ul class="footer-links">
+                    <li><a href="{{ url_for('main.index') }}">Galvenā</a></li>
+                    <li><a href="{{ url_for('tests.all_tests') }}">Visi darbi</a></li>
+                    <li><a href="{{ url_for('homework.homework_list') }}">Mājasdarbi</a></li>
+                    <li><a href="{{ url_for('notifications.notifications_page') }}">Paziņojumi</a></li>
+                </ul>
+            </div>
+            
+            <!-- Info section -->
+            <div class="footer-section">
+                <h5>Informācija</h5>
+                <ul class="footer-links">
+                    <li><a href="{{ url_for('main.updates_log') }}">Updates</a></li>
+                    <li><a href="{{ url_for('main.terms') }}">Lietošanas noteikumi</a></li>
+                    {% if is_host %}
+                    <li><a href="{{ url_for('auth.logout') }}">Iziet</a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('auth.login') }}">Ieiet</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <!-- Stats section -->
+            <div class="footer-section">
+                <h5>Statistika</h5>
+                <div class="footer-stats">
+                    <div class="stat-item">
+                        <span class="stat-icon">📚</span>
+                        <span class="stat-text">
+                            <strong id="footerSubjectsCount">-</strong> priekšmeti
+                        </span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">📝</span>
+                        <span class="stat-text">
+                            <strong id="footerTestsCount">-</strong> darbi
+                        </span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">👥</span>
+                        <span class="stat-text">
+                            <strong id="footerOnlineCount">0</strong> online
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom bar -->
+        <div class="footer-bottom">
+            <p class="footer-copyright">
+                &copy; {{ current_year }} {{ app_name }}. Visas tiesības aizsargātas.
+            </p>
+            <p class="footer-credits">
+                Izveidoja ar ❤️ studentiem
+            </p>
+        </div>
+    </div>
+</footer>
+
+<style>
+.footer {
+    background: var(--card-bg);
+    border-top: 2px solid var(--card-border);
+    margin-top: var(--space-2xl);
+    padding: var(--space-2xl) 0 var(--space-lg) 0;
+}
+
+.footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.footer-section h4,
+.footer-section h5 {
+    color: var(--text-primary);
+    margin-bottom: var(--space-md);
+    font-size: var(--font-size-lg);
+}
+
+.footer-section h5 {
+    font-size: var(--font-size-base);
+}
+
+.footer-description {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
+    font-size: var(--font-size-sm);
+}
+
+.footer-version {
+    color: var(--text-tertiary);
+    font-size: var(--font-size-xs);
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: var(--space-sm);
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    transition: color var(--transition-fast);
+}
+
+.footer-links a:hover {
+    color: var(--primary);
+}
+
+.footer-stats {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--font-size-sm);
+}
+
+.stat-icon {
+    font-size: var(--font-size-lg);
+}
+
+.stat-text {
+    color: var(--text-secondary);
+}
+
+.stat-text strong {
+    color: var(--primary);
+}
+
+.footer-bottom {
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.footer-copyright,
+.footer-credits {
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+// Загрузка статистики для футера
+async function loadFooterStats() {
+    try {
+        const response = await fetch('/api/stats/summary');
+        const data = await response.json();
+        
+        if (data.success && data.stats) {
+            document.getElementById('footerSubjectsCount').textContent = data.stats.subjects_count;
+            document.getElementById('footerTestsCount').textContent = 
+                data.stats.tests_count + data.stats.homework_count;
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки статистики:', error);
+    }
+}
+
+// Обновление online счетчика в футере
+if (typeof socket !== 'undefined') {
+    socket.on('online_count_update', function(data) {
+        const element = document.getElementById('footerOnlineCount');
+        if (element) {
+            element.textContent = data.count;
+        }
+    });
+}
+
+// Загружаем статистику при загрузке
+document.addEventListener('DOMContentLoaded', loadFooterStats);
+</script>
