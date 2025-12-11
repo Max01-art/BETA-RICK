@@ -1,6 +1,18 @@
+# Flask и основные зависимости
 Flask==3.0.0
 gunicorn==21.2.0
-psycopg[binary]==3.1.12
-beautifulsoup4==4.12.2
+
+# База данных PostgreSQL (для Render)
+psycopg[binary]==3.3.2
+
+# HTTP запросы и парсинг
 requests==2.31.0
+beautifulsoup4==4.12.2
+lxml==5.3.0
+
+# Утилиты
 python-dotenv==1.0.0
+
+# Опционально (если нужны)
+# flask-socketio==5.3.6  # Закомментировано для бесплатного плана
+# apscheduler==3.10.4    # Закомментировано для бесплатного плана
