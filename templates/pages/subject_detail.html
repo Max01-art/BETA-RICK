@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+
+{% block title %}{{ subject.name }} - {{ app_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .subject-detail {
+        padding: 2rem 0;
+    }
+    
+    .subject-header {
+        background: linear-gradient(135deg, {{ subject.color }}, {{ subject.color }}dd);
+        border-radius: 20px;
+        padding: 3rem 2rem;
+        margin-bottom: 2rem;
+        color: white;
+        text-align: center;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .subject-icon {
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        margin: 0 auto 1rem;
+        backdrop-filter: blur(10px);
+    }
+    
+    .subject-name {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+    
+    .subject-description {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .subject-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+    
+    .stat-box {
+        background: var(--card-bg);
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-box:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: {{ subject.color }};
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .work-section {
+        margin-bottom: 3rem;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+    }
+    
+    .work-grid {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .empty-message {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container subject-detail">
+    <!-- Subject Header -->
+    <div class="subject-header">
+        <div class="subject-icon">
+            {{ subject.name[0] }}
+        </div>
+        <h1 class="subject-name">{{ subject.name }}</h1>
+        {% if subject.description %}
+        <p class="subject-description">{{ subject.description }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Statistics -->
+    <div class="subject-stats">
+        <div class="stat-box">
+            <div class="stat-number">{{ tests|length }}</div>
+            <div class="stat-label">Testi kopā</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ upcoming_tests|length }}</div>
+            <div class="stat-label">Gaidāmi testi</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ homework|length }}</div>
+            <div class="stat-label">Mājasdarbi kopā</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ upcoming_homework|length }}</div>
+            <div class="stat-label">Aktīvi mājasdarbi</div>
+        </div>
+    </div>
+
+    <!-- Upcoming Tests -->
+    <div class="work-section">
+        <div class="section-header">
+            <h2 class="section-title">📝 Gaidāmie testi</h2>
+            {% if is_host %}
+            <a href="{{ url_for('tests.add') }}?subject={{ subject.name }}" class="btn btn-primary btn-sm">
+                ➕ Pievienot testu
+            </a>
+            {% endif %}
+        </div>
+
+        {% if upcoming_tests %}
+        <div class="work-grid">
+            {% for test in upcoming_tests %}
+            {% include 'components/card.html' with context %}
+            {{ work_card(test, 'test') }}
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-message">
+            <div class="empty-icon">📭</div>
+            <h3>Nav gaidāmu testu</h3>
+            <p>Šim priekšmetam pašlaik nav gaidāmu testu</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Upcoming Homework -->
+    <div class="work-section">
+        <div class="section-header">
+            <h2 class="section-title">📖 Aktīvie mājasdarbi</h2>
+            {% if is_host %}
+            <a href="{{ url_for('homework.add') }}?subject={{ subject.name }}" class="btn btn-primary btn-sm">
+                ➕ Pievienot mājasdarbu
+            </a>
+            {% endif %}
+        </div>
+
+        {% if upcoming_homework %}
+        <div class="work-grid">
+            {% for hw in upcoming_homework %}
+            {{ work_card(hw, 'homework') }}
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-message">
+            <div class="empty-icon">📭</div>
+            <h3>Nav aktīvu mājasdarbu</h3>
+            <p>Šim priekšmetam pašlaik nav aktīvu mājasdarbu</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Past Tests (Collapsed) -->
+    {% if past_tests %}
+    <div class="work-section">
+        <details>
+            <summary class="section-header" style="cursor: pointer;">
+                <h2 class="section-title">📋 Pagātnes testi ({{ past_tests|length }})</h2>
+            </summary>
+            <div class="work-grid" style="margin-top: 1rem;">
+                {% for test in past_tests %}
+                {{ work_card(test, 'test') }}
+                {% endfor %}
+            </div>
+        </details>
+    </div>
+    {% endif %}
+
+    <!-- Past Homework (Collapsed) -->
+    {% if past_homework %}
+    <div class="work-section">
+        <details>
+            <summary class="section-header" style="cursor: pointer;">
+                <h2 class="section-title">📋 Pagātnes mājasdarbi ({{ past_homework|length }})</h2>
+            </summary>
+            <div class="work-grid" style="margin-top: 1rem;">
+                {% for hw in past_homework %}
+                {{ work_card(hw, 'homework') }}
+                {% endfor %}
+            </div>
+        </details>
+    </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
+            ← Atpakaļ uz sākumu
+        </a>
+        
+        {% if is_host %}
+        <a href="{{ url_for('subjects.edit', subject_id=subject.id) }}" class="btn btn-warning">
+            ✏️ Rediģēt priekšmetu
+        </a>
+        {% endif %}
+        
+        <button onclick="exportSubjectCalendar()" class="btn btn-info">
+            📅 Eksportēt kalendāru
+        </button>
+        
+        <button onclick="shareSubject()" class="btn btn-outline">
+            🔗 Kopīgot
+        </button>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    /**
+     * Экспорт календаря предмета
+     */
+    function exportSubjectCalendar() {
+        const subjectName = '{{ subject.name }}';
+        const url = `/subjects/${encodeURIComponent(subjectName)}/calendar.ics`;
+        
+        window.location.href = url;
+        showSuccessNotification('Kalendārs lejupielādēts!');
+    }
+    
+    /**
+     * Поделиться предметом
+     */
+    async function shareSubject() {
+        const subjectName = '{{ subject.name }}';
+        const url = window.location.href;
+        
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: subjectName,
+                    text: `Apskati ${subjectName} darbus Classmate`,
+                    url: url
+                });
+                showSuccessNotification('Kopīgots veiksmīgi!');
+            } catch (error) {
+                console.error('Share error:', error);
+            }
+        } else {
+            // Копирование ссылки
+            await copyToClipboard(url);
+        }
+    }
+    
+    /**
+     * Загрузка статистики
+     */
+    async function loadStats() {
+        try {
+            const response = await fetch(`/api/subjects/${encodeURIComponent('{{ subject.name }}')}/stats`);
+            const data = await response.json();
+            
+            console.log('Subject stats:', data);
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    }
+    
+    // Загрузка данных при инициализации
+    document.addEventListener('DOMContentLoaded', function() {
+        // loadStats();
+        
+        // Анимация при скролле
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeIn 0.5s ease';
+                }
+            });
+        });
+        
+        document.querySelectorAll('.work-card').forEach(card => {
+            observer.observe(card);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,424 @@
+/*
+  Dark Theme
+  Темная тема оформления
+*/
+
+.theme-dark {
+    /* Основные цвета */
+    --primary-color: #5b7aff;
+    --secondary-color: #7c5cff;
+    --accent-color: #ff6b9d;
+    
+    /* Цвета фона */
+    --bg-color: #0d1117;
+    --card-bg: #161b22;
+    --input-bg: #1c2128;
+    --navbar-bg: rgba(22, 27, 34, 0.95);
+    --footer-bg: #161b22;
+    
+    /* Цвета текста */
+    --text-color: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #6e7681;
+    
+    /* Границы */
+    --border-color: #30363d;
+    --border-light: #21262d;
+    
+    /* Тени */
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 5px 20px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
+    
+    /* Статус цвета */
+    --success-color: #3fb950;
+    --danger-color: #f85149;
+    --warning-color: #d29922;
+    --info-color: #58a6ff;
+    
+    /* Градиенты */
+    --gradient-primary: linear-gradient(135deg, #5b7aff 0%, #7c5cff 100%);
+    --gradient-secondary: linear-gradient(135deg, #ff6b9d 0%, #c471ed 100%);
+    --gradient-success: linear-gradient(135deg, #3fb950 0%, #58a6ff 100%);
+    
+    /* Скроллбар */
+    --scrollbar-track: #1c2128;
+    --scrollbar-thumb: #484f58;
+    --scrollbar-thumb-hover: #6e7681;
+}
+
+/* Фон страницы */
+.theme-dark body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Навигация */
+.theme-dark .navbar {
+    background: var(--navbar-bg);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.theme-dark .nav-link {
+    color: var(--text-color);
+}
+
+.theme-dark .nav-link:hover {
+    color: var(--primary-color);
+}
+
+/* Карточки */
+.theme-dark .card {
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.theme-dark .card:hover {
+    box-shadow: var(--shadow-hover);
+    border-color: var(--primary-color);
+}
+
+/* Формы */
+.theme-dark .form-control {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.theme-dark .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(91, 122, 255, 0.2);
+    background-color: var(--input-bg);
+}
+
+.theme-dark .form-control::placeholder {
+    color: var(--text-muted);
+}
+
+/* Кнопки */
+.theme-dark .btn-primary {
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+}
+
+.theme-dark .btn-primary:hover {
+    filter: brightness(1.1);
+}
+
+.theme-dark .btn-outline {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+}
+
+.theme-dark .btn-outline:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.theme-dark .btn-secondary {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.theme-dark .btn-secondary:hover {
+    background: var(--border-color);
+}
+
+/* Декорации темы */
+.theme-dark .sun {
+    opacity: 0;
+    transform: translateY(-100px);
+}
+
+.theme-dark .moon {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.theme-dark .stars {
+    opacity: 1;
+}
+
+.theme-dark .real-cloud {
+    opacity: 0.1;
+}
+
+/* Таблицы */
+.theme-dark table {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+.theme-dark th {
+    background: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.theme-dark td {
+    border-color: var(--border-light);
+    color: var(--text-color);
+}
+
+.theme-dark tr:hover {
+    background: rgba(91, 122, 255, 0.05);
+}
+
+/* Модальные окна */
+.theme-dark .modal-overlay {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.theme-dark .modal-container {
+    background: var(--card-bg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+}
+
+.theme-dark .modal-header {
+    border-bottom-color: var(--border-color);
+}
+
+.theme-dark .modal-footer {
+    border-top-color: var(--border-color);
+}
+
+.theme-dark .modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Badge */
+.theme-dark .badge {
+    background: rgba(91, 122, 255, 0.2);
+    color: var(--primary-color);
+}
+
+/* Работы (тесты, домашние задания) */
+.theme-dark .work-card {
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.theme-dark .work-card:hover {
+    box-shadow: var(--shadow-hover);
+    border-color: var(--primary-color);
+}
+
+/* Предметы */
+.theme-dark .subject-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+.theme-dark .subject-card:hover {
+    border-color: var(--primary-color);
+}
+
+/* Footer */
+.theme-dark .footer {
+    background: var(--footer-bg);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+/* Alerts */
+.theme-dark .alert-success {
+    background: rgba(63, 185, 80, 0.15);
+    border-left: 4px solid var(--success-color);
+    color: var(--success-color);
+}
+
+.theme-dark .alert-danger {
+    background: rgba(248, 81, 73, 0.15);
+    border-left: 4px solid var(--danger-color);
+    color: var(--danger-color);
+}
+
+.theme-dark .alert-warning {
+    background: rgba(210, 153, 34, 0.15);
+    border-left: 4px solid var(--warning-color);
+    color: var(--warning-color);
+}
+
+.theme-dark .alert-info {
+    background: rgba(88, 166, 255, 0.15);
+    border-left: 4px solid var(--info-color);
+    color: var(--info-color);
+}
+
+/* Скроллбар */
+.theme-dark ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.theme-dark ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+.theme-dark ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 5px;
+}
+
+.theme-dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Loading screen */
+.theme-dark .loading-screen {
+    background: var(--bg-color);
+}
+
+/* Timer */
+.theme-dark .timer-display {
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+/* Dropdown */
+.theme-dark .dropdown-menu {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+}
+
+.theme-dark .dropdown-item {
+    color: var(--text-color);
+}
+
+.theme-dark .dropdown-item:hover {
+    background: rgba(91, 122, 255, 0.1);
+    color: var(--primary-color);
+}
+
+/* Breadcrumbs */
+.theme-dark .breadcrumb {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.theme-dark .breadcrumb a {
+    color: var(--primary-color);
+}
+
+/* Pagination */
+.theme-dark .page-link {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.theme-dark .page-link:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.theme-dark .page-item.active .page-link {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Progress bars */
+.theme-dark .progress {
+    background: var(--border-light);
+}
+
+.theme-dark .progress-bar {
+    background: var(--gradient-primary);
+}
+
+/* Code blocks */
+.theme-dark pre {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.theme-dark code {
+    background: var(--input-bg);
+    color: #ff7b72;
+}
+
+/* Tooltips */
+.theme-dark .tooltip {
+    background: rgba(230, 237, 243, 0.95);
+    color: var(--bg-color);
+}
+
+/* Links */
+.theme-dark a {
+    color: var(--primary-color);
+}
+
+.theme-dark a:hover {
+    color: var(--secondary-color);
+}
+
+/* Selection */
+.theme-dark ::selection {
+    background: rgba(91, 122, 255, 0.3);
+    color: var(--text-color);
+}
+
+/* Transitions */
+.theme-dark * {
+    transition: background-color 0.3s ease, 
+                color 0.3s ease,
+                border-color 0.3s ease;
+}
+
+/* Status colors adjustments */
+.theme-dark .status-today {
+    background: rgba(248, 81, 73, 0.2);
+    color: var(--danger-color);
+}
+
+.theme-dark .status-tomorrow {
+    background: rgba(210, 153, 34, 0.2);
+    color: var(--warning-color);
+}
+
+.theme-dark .status-soon {
+    background: rgba(88, 166, 255, 0.2);
+    color: var(--info-color);
+}
+
+.theme-dark .status-normal {
+    background: rgba(63, 185, 80, 0.2);
+    color: var(--success-color);
+}
+
+.theme-dark .status-overdue {
+    background: rgba(139, 148, 158, 0.2);
+    color: var(--text-secondary);
+}
+
+/* Input focus glow */
+.theme-dark input:focus,
+.theme-dark textarea:focus,
+.theme-dark select:focus {
+    box-shadow: 0 0 0 3px rgba(91, 122, 255, 0.2),
+                0 0 20px rgba(91, 122, 255, 0.1);
+}
+
+/* Neon effects for dark theme */
+.theme-dark .neon-text {
+    text-shadow: 0 0 10px var(--primary-color),
+                 0 0 20px var(--primary-color),
+                 0 0 30px var(--primary-color);
+}
+
+.theme-dark .card-premium {
+    box-shadow: 0 0 20px rgba(91, 122, 255, 0.3);
+    border: 1px solid var(--primary-color);
+}

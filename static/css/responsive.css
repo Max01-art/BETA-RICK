@@ -1,0 +1,546 @@
+/*
+  Responsive CSS
+  Адаптивные стили для разных размеров экрана
+*/
+
+/* ==================== LARGE DESKTOP (1440px+) ==================== */
+@media (min-width: 1440px) {
+    .container {
+        max-width: 1320px;
+    }
+    
+    .page-header h1 {
+        font-size: 2.5rem;
+    }
+}
+
+
+/* ==================== DESKTOP (1024px - 1439px) ==================== */
+@media (max-width: 1439px) {
+    .container {
+        max-width: 1140px;
+    }
+}
+
+
+/* ==================== TABLET LANDSCAPE (768px - 1023px) ==================== */
+@media (max-width: 1023px) {
+    .container {
+        max-width: 960px;
+    }
+    
+    /* Navigation */
+    .navbar-nav {
+        flex-direction: row;
+        gap: 1rem;
+    }
+    
+    .nav-link {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    /* Grid adjustments */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .subjects-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Cards */
+    .work-card {
+        padding: 1.25rem;
+    }
+    
+    /* Page header */
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    /* Modals */
+    .modal-container {
+        width: 95%;
+    }
+}
+
+
+/* ==================== TABLET PORTRAIT (480px - 767px) ==================== */
+@media (max-width: 767px) {
+    .container {
+        padding: 0 1rem;
+    }
+    
+    /* Navigation */
+    .navbar {
+        padding: 0.75rem 1rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+    
+    .navbar-nav {
+        display: none;
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: var(--navbar-bg);
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: var(--shadow);
+        z-index: 1000;
+    }
+    
+    .navbar-nav.show {
+        display: flex;
+    }
+    
+    .nav-link {
+        padding: 0.75rem 1rem;
+        width: 100%;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .nav-link:last-child {
+        border-bottom: none;
+    }
+    
+    /* Mobile menu toggle */
+    .mobile-menu-toggle {
+        display: block;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-color);
+    }
+    
+    /* Hero section */
+    .hero {
+        padding: 3rem 0;
+    }
+    
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    /* Grid adjustments */
+    .stats-grid,
+    .subjects-grid,
+    .quick-actions {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    /* Page header */
+    .page-header h1 {
+        font-size: 1.75rem;
+    }
+    
+    /* Work cards */
+    .work-card-header {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .work-badge {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .work-info {
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .work-status {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .work-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    /* Buttons */
+    .btn {
+        padding: 0.65rem 1.25rem;
+        font-size: 0.95rem;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn-group .btn {
+        width: 100%;
+    }
+    
+    /* Forms */
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .form-group {
+        width: 100%;
+    }
+    
+    /* Modals */
+    .modal-container {
+        width: 95%;
+        max-height: 95vh;
+        margin: 1rem;
+    }
+    
+    .modal-header {
+        padding: 1rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+        max-height: 70vh;
+    }
+    
+    .modal-footer {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+    }
+    
+    /* Tables */
+    .table {
+        font-size: 0.875rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    /* Make tables scrollable */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Footer */
+    .footer {
+        padding: 2rem 1rem;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+    
+    /* Timer */
+    .timer-display {
+        width: 90%;
+        max-width: 350px;
+    }
+    
+    /* Flash messages */
+    .flash-messages {
+        right: 10px;
+        left: 10px;
+        max-width: 100%;
+    }
+    
+    /* Admin dashboard */
+    .admin-dashboard {
+        padding: 1rem 0;
+    }
+    
+    .news-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .news-thumbnail {
+        width: 100%;
+        height: 150px;
+    }
+    
+    .news-actions {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    
+    .news-actions .btn {
+        flex: 1;
+        min-width: 80px;
+    }
+    
+    /* Subject card */
+    .subject-card {
+        padding: 1.25rem;
+    }
+    
+    .subject-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .subject-actions .btn {
+        width: 100%;
+    }
+}
+
+
+/* ==================== MOBILE (max-width: 479px) ==================== */
+@media (max-width: 479px) {
+    /* Typography */
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.25rem;
+    }
+    
+    /* Navigation */
+    .navbar {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    /* Cards */
+    .card {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+    
+    .work-card {
+        padding: 1rem;
+    }
+    
+    /* Buttons */
+    .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn-sm {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Forms */
+    .form-control {
+        padding: 0.65rem 0.85rem;
+        font-size: 0.95rem;
+    }
+    
+    .form-label {
+        font-size: 0.95rem;
+    }
+    
+    /* Stat cards */
+    .stat-value {
+        font-size: 2rem;
+    }
+    
+    /* Work badge */
+    .work-badge {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .work-subject {
+        font-size: 1rem;
+    }
+    
+    /* Modal */
+    .modal-title {
+        font-size: 1.25rem;
+    }
+    
+    /* Pagination */
+    .page-link {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Timer */
+    .timer-display {
+        width: 95%;
+    }
+    
+    .timer-time {
+        font-size: 2.5rem;
+    }
+    
+    /* Footer */
+    .footer {
+        font-size: 0.875rem;
+        padding: 1.5rem 0.75rem;
+    }
+}
+
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+    /* Hide non-essential elements */
+    .navbar,
+    .footer,
+    .btn,
+    .timer-display,
+    .theme-decorations,
+    .mobile-menu-toggle {
+        display: none !important;
+    }
+    
+    /* Adjust layout */
+    body {
+        background: white;
+        color: black;
+    }
+    
+    .container {
+        max-width: 100%;
+        padding: 0;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        page-break-inside: avoid;
+    }
+    
+    /* Links */
+    a {
+        text-decoration: underline;
+        color: black;
+    }
+    
+    a[href]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+    }
+}
+
+
+/* ==================== LANDSCAPE ORIENTATION ==================== */
+@media (orientation: landscape) and (max-height: 500px) {
+    /* Adjust header */
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+    
+    /* Adjust modal */
+    .modal-container {
+        max-height: 90vh;
+    }
+    
+    .modal-body {
+        max-height: 60vh;
+    }
+}
+
+
+/* ==================== REDUCED MOTION ==================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+
+/* ==================== HIGH CONTRAST ==================== */
+@media (prefers-contrast: high) {
+    * {
+        border-width: 2px;
+    }
+    
+    .btn {
+        border: 2px solid currentColor;
+    }
+    
+    .card {
+        border: 2px solid var(--border-color);
+    }
+}
+
+
+/* ==================== UTILITY RESPONSIVE CLASSES ==================== */
+
+/* Hide on mobile */
+@media (max-width: 767px) {
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+/* Hide on tablet */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .hide-tablet {
+        display: none !important;
+    }
+}
+
+/* Hide on desktop */
+@media (min-width: 1024px) {
+    .hide-desktop {
+        display: none !important;
+    }
+}
+
+/* Show only on mobile */
+.show-mobile {
+    display: none !important;
+}
+
+@media (max-width: 767px) {
+    .show-mobile {
+        display: block !important;
+    }
+}
+
+/* Show only on tablet */
+.show-tablet {
+    display: none !important;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .show-tablet {
+        display: block !important;
+    }
+}
+
+/* Show only on desktop */
+.show-desktop {
+    display: none !important;
+}
+
+@media (min-width: 1024px) {
+    .show-desktop {
+        display: block !important;
+    }
+}

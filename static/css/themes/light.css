@@ -1,0 +1,325 @@
+/*
+  Light Theme (Default)
+  Светлая тема оформления
+*/
+
+.theme-light {
+    /* Основные цвета */
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-color: #f72585;
+    
+    /* Цвета фона */
+    --bg-color: #f8f9fa;
+    --card-bg: #ffffff;
+    --input-bg: #ffffff;
+    --navbar-bg: rgba(255, 255, 255, 0.95);
+    --footer-bg: #ffffff;
+    
+    /* Цвета текста */
+    --text-color: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #adb5bd;
+    
+    /* Границы */
+    --border-color: #dee2e6;
+    --border-light: #e9ecef;
+    
+    /* Тени */
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 5px 20px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.15);
+    
+    /* Статус цвета */
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    
+    /* Градиенты */
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    
+    /* Скроллбар */
+    --scrollbar-track: #f1f1f1;
+    --scrollbar-thumb: #888888;
+    --scrollbar-thumb-hover: #555555;
+}
+
+/* Фон страницы */
+.theme-light body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Навигация */
+.theme-light .navbar {
+    background: var(--navbar-bg);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+}
+
+.theme-light .nav-link {
+    color: var(--text-color);
+}
+
+.theme-light .nav-link:hover {
+    color: var(--primary-color);
+}
+
+/* Карточки */
+.theme-light .card {
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+}
+
+.theme-light .card:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+/* Формы */
+.theme-light .form-control {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.theme-light .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+/* Кнопки */
+.theme-light .btn-primary {
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+}
+
+.theme-light .btn-outline {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+}
+
+.theme-light .btn-outline:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Декорации темы */
+.theme-light .sun {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.theme-light .moon {
+    opacity: 0;
+    transform: translateY(100px);
+}
+
+.theme-light .stars {
+    opacity: 0;
+}
+
+.theme-light .real-cloud {
+    opacity: 0.8;
+}
+
+/* Таблицы */
+.theme-light table {
+    background: var(--card-bg);
+}
+
+.theme-light th {
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+.theme-light td {
+    border-color: var(--border-light);
+}
+
+.theme-light tr:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+/* Модальные окна */
+.theme-light .modal-container {
+    background: var(--card-bg);
+    box-shadow: var(--shadow-lg);
+}
+
+.theme-light .modal-header {
+    border-bottom-color: var(--border-color);
+}
+
+.theme-light .modal-footer {
+    border-top-color: var(--border-color);
+}
+
+/* Badge */
+.theme-light .badge {
+    background: rgba(67, 97, 238, 0.1);
+    color: var(--primary-color);
+}
+
+/* Работы (тесты, домашние задания) */
+.theme-light .work-card {
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+}
+
+.theme-light .work-card:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+/* Предметы */
+.theme-light .subject-card {
+    background: var(--card-bg);
+}
+
+/* Footer */
+.theme-light .footer {
+    background: var(--footer-bg);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+/* Alerts */
+.theme-light .alert-success {
+    background: rgba(40, 167, 69, 0.1);
+    border-left: 4px solid var(--success-color);
+    color: var(--success-color);
+}
+
+.theme-light .alert-danger {
+    background: rgba(220, 53, 69, 0.1);
+    border-left: 4px solid var(--danger-color);
+    color: var(--danger-color);
+}
+
+.theme-light .alert-warning {
+    background: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid var(--warning-color);
+    color: #856404;
+}
+
+.theme-light .alert-info {
+    background: rgba(23, 162, 184, 0.1);
+    border-left: 4px solid var(--info-color);
+    color: var(--info-color);
+}
+
+/* Скроллбар */
+.theme-light ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.theme-light ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+.theme-light ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 5px;
+}
+
+.theme-light ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Loading screen */
+.theme-light .loading-screen {
+    background: var(--bg-color);
+}
+
+/* Timer */
+.theme-light .timer-display {
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+}
+
+/* Dropdown */
+.theme-light .dropdown-menu {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.theme-light .dropdown-item {
+    color: var(--text-color);
+}
+
+.theme-light .dropdown-item:hover {
+    background: rgba(67, 97, 238, 0.1);
+    color: var(--primary-color);
+}
+
+/* Breadcrumbs */
+.theme-light .breadcrumb {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.theme-light .breadcrumb a {
+    color: var(--primary-color);
+}
+
+/* Pagination */
+.theme-light .pagination {
+    gap: 0.5rem;
+}
+
+.theme-light .page-link {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.theme-light .page-link:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.theme-light .page-item.active .page-link {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Progress bars */
+.theme-light .progress {
+    background: var(--border-light);
+}
+
+.theme-light .progress-bar {
+    background: var(--gradient-primary);
+}
+
+/* Code blocks */
+.theme-light pre {
+    background: #f8f9fa;
+    border: 1px solid var(--border-color);
+    color: #212529;
+}
+
+.theme-light code {
+    background: #f8f9fa;
+    color: #e83e8c;
+}
+
+/* Tooltips */
+.theme-light .tooltip {
+    background: rgba(33, 37, 41, 0.95);
+    color: white;
+}
+
+/* Transitions */
+.theme-light * {
+    transition: background-color 0.3s ease, 
+                color 0.3s ease,
+                border-color 0.3s ease;
+}

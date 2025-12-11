@@ -1,0 +1,328 @@
+<!-- 
+  Универсальный компонент карточки
+  
+  Параметры:
+    - title: Заголовок карточки
+    - content: Содержимое
+    - type: Тип (test, homework, news, subject)
+    - date: Дата
+    - time: Время
+    - days_left: Дней осталось
+    - url: Ссылка
+    - color: Цвет (для предметов)
+    - icon: Иконка
+-->
+
+{% macro work_card(item, type='test') %}
+<div class="work-card {{ type }}-card" data-days-left="{{ item.days_left|default(999) }}">
+    <div class="work-card-header">
+        <div class="work-badge" style="background-color: {{ item.subject_color|default('#4361ee') }};">
+            {{ item.subject[0] if item.subject else '?' }}
+        </div>
+        <div class="work-info">
+            <span class="work-subject">{{ item.subject }}</span>
+            {% if type == 'test' %}
+                <span class="work-type">{{ item.type }}</span>
+            {% else %}
+                <span class="work-type">{{ item.type|default('Mājasdarbs') }}</span>
+            {% endif %}
+        </div>
+        <div class="work-status status-{{ get_work_status(item.days_left) }}">
+            {% if item.days_left == 0 %}
+                Šodien!
+            {% elif item.days_left == 1 %}
+                Rīt
+            {% elif item.days_left < 0 %}
+                Nokavēts
+            {% else %}
+                {{ item.days_left }} dienas
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="work-card-body">
+        {% if type == 'homework' %}
+            <h3 class="work-title">{{ item.title }}</h3>
+        {% endif %}
+        
+        {% if item.description %}
+            <p class="work-description">{{ item.description[:100] }}{% if item.description|length > 100 %}...{% endif %}</p>
+        {% endif %}
+        
+        <div class="work-meta">
+            <span class="work-date">📅 {{ item.date }}</span>
+            {% if item.time %}
+                <span class="work-time">🕐 {{ item.time }}</span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="work-card-footer">
+        {% if type == 'test' %}
+            <a href="{{ url_for('tests.detail', test_id=item.id) }}" class="btn btn-sm btn-outline">
+                Skatīt detaļas →
+            </a>
+        {% else %}
+            <a href="{{ url_for('homework.detail', homework_id=item.id) }}" class="btn btn-sm btn-outline">
+                Skatīt detaļas →
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.work-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.work-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.work-card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.work-badge {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.work-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.work-subject {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.work-type {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.work-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.status-today {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+}
+
+.status-tomorrow {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+}
+
+.status-soon {
+    background: rgba(13, 202, 240, 0.2);
+    color: #0dcaf0;
+}
+
+.status-normal {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+}
+
+.status-overdue {
+    background: rgba(108, 117, 125, 0.2);
+    color: #6c757d;
+}
+
+.work-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.work-description {
+    color: var(--text-secondary);
+    margin: 0.5rem 0;
+    line-height: 1.5;
+}
+
+.work-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+.work-card-footer {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline:hover {
+    background: var(--primary-color);
+    color: white;
+}
+</style>
+{% endmacro %}
+
+
+{% macro subject_card(subject) %}
+<div class="subject-card">
+    <div class="subject-header" style="background-color: {{ subject.color }};">
+        <span class="subject-initial">{{ subject.name[0] }}</span>
+    </div>
+    <div class="subject-body">
+        <h3 class="subject-name">{{ subject.name }}</h3>
+        {% if subject.description %}
+            <p class="subject-description">{{ subject.description[:60] }}...</p>
+        {% endif %}
+        <div class="subject-stats">
+            <span>📝 {{ subject.tests_count|default(0) }}</span>
+            <span>📖 {{ subject.homework_count|default(0) }}</span>
+        </div>
+    </div>
+    <a href="{{ url_for('subjects.detail', subject_name=subject.name) }}" class="btn btn-block">
+        Atvērt →
+    </a>
+</div>
+
+<style>
+.subject-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+.subject-card:hover {
+    transform: translateY(-5px);
+}
+
+.subject-header {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.subject-initial {
+    font-size: 3rem;
+    font-weight: bold;
+    color: white;
+}
+
+.subject-body {
+    padding: 1.5rem;
+}
+
+.subject-name {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.subject-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.subject-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+</style>
+{% endmacro %}
+
+
+{% macro news_card(news) %}
+<div class="news-card">
+    {% if news.image_url %}
+        <img src="{{ news.image_url }}" alt="{{ news.title }}" class="news-image">
+    {% else %}
+        <div class="news-image-placeholder"></div>
+    {% endif %}
+    
+    <div class="news-content">
+        <span class="news-date">{{ news.date }}</span>
+        <h3 class="news-title">{{ news.title }}</h3>
+        <p class="news-excerpt">{{ news.content[:120] }}{% if news.content|length > 120 %}...{% endif %}</p>
+        <a href="{{ url_for('news.detail', news_id=news.id) }}" class="btn btn-primary btn-sm">
+            Lasīt vairāk →
+        </a>
+    </div>
+</div>
+
+<style>
+.news-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+.news-card:hover {
+    transform: translateY(-5px);
+}
+
+.news-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.news-image-placeholder {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.news-content {
+    padding: 1.5rem;
+}
+
+.news-date {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.news-title {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+}
+
+.news-excerpt {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+</style>
+{% endmacro %}
