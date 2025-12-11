@@ -28,7 +28,7 @@ class Config:
     
     # Безопасность
     HOST_PASSWORD = os.environ.get('HOST_PASSWORD', 'kolya333arbuz')
-    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = False  # Изменено для работы на Render
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
@@ -41,7 +41,8 @@ class Config:
     SCHEDULER_API_ENABLED = True
     SCHEDULER_TIMEZONE = 'Europe/Riga'
     
-    # SocketIO
+    # SocketIO - отключаем на продакшене для бесплатного плана
+    USE_SOCKETIO = False
     SOCKETIO_MESSAGE_QUEUE = None
     SOCKETIO_CORS_ALLOWED_ORIGINS = '*'
     
@@ -78,13 +79,24 @@ class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
     DATABASE_URL = 'sqlite:///school.db'
+    USE_SOCKETIO = True  # Включаем для разработки
 
 
 class ProductionConfig(Config):
     """Конфигурация для продакшена"""
     DEBUG = False
     TESTING = False
+    
+    # На Render DATABASE_URL уже установлен автоматически
+    # Если его нет, используем SQLite как fallback
+    if not os.environ.get('DATABASE_URL'):
+        DATABASE_URL = 'sqlite:///school.db'
+    
+    # Безопасность для HTTPS на Render
     SESSION_COOKIE_SECURE = True
+    
+    # Отключаем SocketIO на продакшене для экономии ресурсов
+    USE_SOCKETIO = False
 
 
 class TestingConfig(Config):
@@ -92,6 +104,7 @@ class TestingConfig(Config):
     DEBUG = True
     TESTING = True
     DATABASE_URL = 'sqlite:///test.db'
+    USE_SOCKETIO = False
 
 
 # Выбор конфигурации в зависимости от окружения
@@ -105,4 +118,9 @@ config = {
 def get_config():
     """Возвращает нужную конфигурацию"""
     env = os.environ.get('FLASK_ENV', 'development')
+    
+    # На Render автоматически определяем продакшен
+    if os.environ.get('RENDER'):
+        env = 'production'
+    
     return config.get(env, config['default'])

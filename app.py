@@ -3,12 +3,10 @@
 Минимизированная версия - вся логика вынесена в модули
 """
 from flask import Flask, render_template
-from flask_socketio import SocketIO
 import os
 
 from config import get_config
-from core.database import init_db, get_db_connection
-from core.scheduler import init_scheduler
+from core.database import init_db
 from utils.decorators import register_context_processors
 
 # Импорт маршрутов
@@ -34,10 +32,20 @@ def create_app(config_name=None):
     if config_name is None:
         config_name = os.environ.get('FLASK_ENV', 'development')
     
-    app.config.from_object(get_config())
+    config_obj = get_config()
+    app.config.from_object(config_obj)
     
-    # Инициализация расширений
-    socketio = SocketIO(app, cors_allowed_origins="*")
+    # Инициализация SocketIO только если включено
+    socketio = None
+    if app.config.get('USE_SOCKETIO', False):
+        try:
+            from flask_socketio import SocketIO
+            socketio = SocketIO(app, cors_allowed_origins="*")
+            print("✅ SocketIO enabled")
+        except ImportError:
+            print("⚠️ flask-socketio not installed, running without WebSocket support")
+    else:
+        print("ℹ️ SocketIO disabled (production mode)")
     
     # Инициализация базы данных
     with app.app_context():
@@ -57,23 +65,45 @@ def create_app(config_name=None):
     app.register_blueprint(api_bp, url_prefix='/api')
     app.register_blueprint(import_routes_bp, url_prefix='/import')
     
-    # Инициализация планировщика (только для продакшена)
-    if not app.config['DEBUG']:
-        init_scheduler(app)
+    # Инициализация планировщика (только для продакшена с БД)
+    # На бесплатном плане Render лучше отключить
+    if not app.config['DEBUG'] and not os.environ.get('RENDER_FREE'):
+        try:
+            from core.scheduler import init_scheduler
+            init_scheduler(app)
+            print("✅ Scheduler initialized")
+        except Exception as e:
+            print(f"⚠️ Scheduler disabled: {e}")
     
     # Обработчики ошибок
     @app.errorhandler(404)
     def not_found(error):
-        return render_template('errors/404.html'), 404
+        return render_template('error.html', 
+                             error_code=404, 
+                             error_message='Страница не найдена'), 404
     
     @app.errorhandler(500)
     def internal_error(error):
-        return render_template('errors/500.html'), 500
+        return render_template('error.html', 
+                             error_code=500, 
+                             error_message='Внутренняя ошибка сервера'), 500
     
     # Создание необходимых папок
-    for folder in ['static/uploads', 'static/uploads/avatars', 
-                   'static/uploads/news', 'static/uploads/exports', 'logs']:
-        os.makedirs(folder, exist_ok=True)
+    folders = [
+        'static/uploads', 
+        'static/uploads/avatars', 
+        'static/uploads/news', 
+        'static/uploads/exports', 
+        'logs'
+    ]
+    
+    for folder in folders:
+        try:
+            os.makedirs(folder, exist_ok=True)
+        except Exception as e:
+            print(f"⚠️ Cannot create folder {folder}: {e}")
+    
+    print(f"✅ App initialized - {app.config['APP_NAME']} v{app.config['APP_VERSION']}")
     
     return app, socketio
 
@@ -84,5 +114,17 @@ app, socketio = create_app()
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    print(f"🚀 Запуск сервера на порту: {port}")
-    socketio.run(app, host='0.0.0.0', port=port, debug=False, allow_unsafe_werkzeug=True)
+    
+    # Определяем окружение
+    is_production = os.environ.get('FLASK_ENV') == 'production' or os.environ.get('RENDER')
+    
+    if is_production:
+        print(f"🚀 Production mode on port: {port}")
+        # В продакшене используем gunicorn, не нужен socketio.run
+        app.run(host='0.0.0.0', port=port, debug=False)
+    else:
+        print(f"🔧 Development mode on port: {port}")
+        if socketio:
+            socketio.run(app, host='0.0.0.0', port=port, debug=True, allow_unsafe_werkzeug=True)
+        else:
+            app.run(host='0.0.0.0', port=port, debug=True)

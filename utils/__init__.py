@@ -1,6 +1,35 @@
 """
-Utils package - вспомогательные функции
+Utils package initialization
 """
+
+from .decorators import (
+    host_required,
+    login_required,
+    anonymous_required,
+    rate_limit,
+    validate_json,
+    log_activity,
+    cache_response,
+    require_fields,
+    register_context_processors
+)
+
+from .validators import (
+    validate_email,
+    validate_date,
+    validate_time,
+    validate_subject_name,
+    validate_color,
+    validate_password,
+    validate_url,
+    validate_homework_data,
+    validate_test_data,
+    validate_news_data,
+    validate_subject_data,
+    sanitize_html,
+    validate_file_upload
+)
+
 from .helpers import (
     calculate_days_left,
     get_work_status,
@@ -17,18 +46,43 @@ from .helpers import (
     group_by_date
 )
 
-from .decorators import (
-    host_required,
-    login_required,
-    ajax_required,
-    cache_response,
-    register_context_processors,
-    log_request,
-    measure_time,
-    handle_errors
+from .calendar_utils import (
+    generate_ics_event,
+    generate_calendar_for_tests,
+    generate_calendar_for_homework,
+    generate_calendar_for_all_work,
+    parse_ics_file,
+    create_reminder_event,
+    generate_weekly_calendar
 )
 
 __all__ = [
+    # Decorators
+    'host_required',
+    'login_required',
+    'anonymous_required',
+    'rate_limit',
+    'validate_json',
+    'log_activity',
+    'cache_response',
+    'require_fields',
+    'register_context_processors',
+    
+    # Validators
+    'validate_email',
+    'validate_date',
+    'validate_time',
+    'validate_subject_name',
+    'validate_color',
+    'validate_password',
+    'validate_url',
+    'validate_homework_data',
+    'validate_test_data',
+    'validate_news_data',
+    'validate_subject_data',
+    'sanitize_html',
+    'validate_file_upload',
+    
     # Helpers
     'calculate_days_left',
     'get_work_status',
@@ -44,13 +98,12 @@ __all__ = [
     'paginate_list',
     'group_by_date',
     
-    # Decorators
-    'host_required',
-    'login_required',
-    'ajax_required',
-    'cache_response',
-    'register_context_processors',
-    'log_request',
-    'measure_time',
-    'handle_errors'
+    # Calendar utils
+    'generate_ics_event',
+    'generate_calendar_for_tests',
+    'generate_calendar_for_homework',
+    'generate_calendar_for_all_work',
+    'parse_ics_file',
+    'create_reminder_event',
+    'generate_weekly_calendar'
 ]
