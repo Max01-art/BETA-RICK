@@ -1,32 +1,8 @@
-# Datu faili
-*.json
-instance/
 *.db
-*.sqlite3
-
-# Python
-__pycache__/
 *.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
+__pycache__/
+.env
 .venv/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Uploads (var mainīties)
-static/uploads/*
-!static/uploads/.gitkeep
+venv/
+logs/
+static/uploads/
