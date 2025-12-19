@@ -281,6 +281,246 @@ def sanitize_input(text, max_length=1000):
     return text
 
 
+def sanitize_html(text, allowed_tags=None):
+    """
+    Очистка HTML с сохранением разрешенных тегов
+    
+    Args:
+        text: HTML текст
+        allowed_tags: Список разрешенных тегов
+    
+    Returns:
+        str: Очищенный HTML
+    """
+    if not text:
+        return ""
+    
+    if allowed_tags is None:
+        allowed_tags = {'p', 'br', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3'}
+    
+    # Удаляем опасные атрибуты и скрипты
+    text = re.sub(r'<script[^>]*>.*?</script>', '', text, flags=re.IGNORECASE | re.DOTALL)
+    text = re.sub(r'javascript:', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'on\w+\s*=\s*["\'][^"\']*["\']', '', text, flags=re.IGNORECASE)
+    
+    return text
+
+
+def validate_file_upload(file, max_size_mb=10, allowed_extensions=None):
+    """
+    Валидация загружаемого файла
+    
+    Args:
+        file: Объект файла (Flask FileStorage)
+        max_size_mb: Максимальный размер в МБ
+        allowed_extensions: Список допустимых расширений
+    
+    Returns:
+        tuple: (bool, str) - (валидность, сообщение об ошибке)
+    """
+    if not file:
+        return False, "Файл не выбран"
+    
+    if not file.filename:
+        return False, "Неверное имя файла"
+    
+    # Проверка расширения
+    is_valid, error = validate_file_extension(file.filename, allowed_extensions)
+    if not is_valid:
+        return False, error
+    
+    # Проверка размера (если доступно)
+    if hasattr(file, 'content_length') and file.content_length:
+        max_size_bytes = max_size_mb * 1024 * 1024
+        if file.content_length > max_size_bytes:
+            return False, f"Файл слишком большой (максимум {max_size_mb}МБ)"
+    
+    return True, ""
+
+
+def validate_homework_data(data):
+    """
+    Валидация данных домашнего задания
+    
+    Args:
+        data: Словарь с данными
+    
+    Returns:
+        tuple: (bool, dict) - (валидность, словарь ошибок)
+    """
+    errors = {}
+    
+    # Проверка предмета
+    if not data.get('subject_id'):
+        errors['subject_id'] = "Выберите предмет"
+    
+    # Проверка даты
+    is_valid, error = validate_date(data.get('due_date', ''), allow_past=False)
+    if not is_valid:
+        errors['due_date'] = error
+    
+    # Проверка времени (опционально)
+    is_valid, error = validate_time(data.get('due_time', ''))
+    if not is_valid:
+        errors['due_time'] = error
+    
+    # Проверка описания
+    is_valid, error = validate_text_length(
+        data.get('description', ''),
+        min_length=1,
+        max_length=2000,
+        field_name="Описание"
+    )
+    if not is_valid:
+        errors['description'] = error
+    
+    # Проверка URL (опционально)
+    is_valid, error = validate_url(data.get('url', ''))
+    if not is_valid:
+        errors['url'] = error
+    
+    return len(errors) == 0, errors
+
+
+def validate_test_data(data):
+    """
+    Валидация данных теста/контрольной
+    
+    Args:
+        data: Словарь с данными
+    
+    Returns:
+        tuple: (bool, dict) - (валидность, словарь ошибок)
+    """
+    errors = {}
+    
+    # Проверка предмета
+    if not data.get('subject_id'):
+        errors['subject_id'] = "Выберите предмет"
+    
+    # Проверка типа работы
+    is_valid, error = validate_work_type(data.get('work_type', ''))
+    if not is_valid:
+        errors['work_type'] = error
+    
+    # Проверка даты
+    is_valid, error = validate_date(data.get('date', ''), allow_past=False)
+    if not is_valid:
+        errors['date'] = error
+    
+    # Проверка времени (опционально)
+    is_valid, error = validate_time(data.get('time', ''))
+    if not is_valid:
+        errors['time'] = error
+    
+    # Проверка темы
+    is_valid, error = validate_text_length(
+        data.get('topic', ''),
+        min_length=2,
+        max_length=200,
+        field_name="Тема"
+    )
+    if not is_valid:
+        errors['topic'] = error
+    
+    # Проверка описания (опционально)
+    is_valid, error = validate_text_length(
+        data.get('description', ''),
+        min_length=0,
+        max_length=1000,
+        field_name="Описание"
+    )
+    if not is_valid:
+        errors['description'] = error
+    
+    return len(errors) == 0, errors
+
+
+def validate_news_data(data):
+    """
+    Валидация данных новости
+    
+    Args:
+        data: Словарь с данными
+    
+    Returns:
+        tuple: (bool, dict) - (валидность, словарь ошибок)
+    """
+    errors = {}
+    
+    # Проверка заголовка
+    is_valid, error = validate_text_length(
+        data.get('title', ''),
+        min_length=3,
+        max_length=200,
+        field_name="Заголовок"
+    )
+    if not is_valid:
+        errors['title'] = error
+    
+    # Проверка содержимого
+    is_valid, error = validate_text_length(
+        data.get('content', ''),
+        min_length=10,
+        max_length=5000,
+        field_name="Содержимое"
+    )
+    if not is_valid:
+        errors['content'] = error
+    
+    # Проверка URL изображения (опционально)
+    is_valid, error = validate_url(data.get('image_url', ''))
+    if not is_valid:
+        errors['image_url'] = error
+    
+    return len(errors) == 0, errors
+
+
+def validate_subject_data(data):
+    """
+    Валидация данных предмета
+    
+    Args:
+        data: Словарь с данными
+    
+    Returns:
+        tuple: (bool, dict) - (валидность, словарь ошибок)
+    """
+    errors = {}
+    
+    # Проверка названия
+    is_valid, error = validate_subject_name(data.get('name', ''))
+    if not is_valid:
+        errors['name'] = error
+    
+    # Проверка преподавателя (опционально)
+    is_valid, error = validate_text_length(
+        data.get('teacher', ''),
+        min_length=0,
+        max_length=100,
+        field_name="Преподаватель"
+    )
+    if not is_valid:
+        errors['teacher'] = error
+    
+    # Проверка цвета (опционально)
+    is_valid, error = validate_color(data.get('color', ''))
+    if not is_valid:
+        errors['color'] = error
+    
+    # Проверка описания (опционально)
+    is_valid, error = validate_text_length(
+        data.get('description', ''),
+        min_length=0,
+        max_length=500,
+        field_name="Описание"
+    )
+    if not is_valid:
+        errors['description'] = error
+    
+    return len(errors) == 0, errors
+
+
 class ValidationError(Exception):
     """Исключение для ошибок валидации"""
     pass
