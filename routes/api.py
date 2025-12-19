@@ -7,7 +7,6 @@ from models.test import Test
 from models.homework import Homework
 from models.subject import Subject
 from models.user import User
-from utils.decorators import ajax_required
 
 api_bp = Blueprint('api', __name__)
 
