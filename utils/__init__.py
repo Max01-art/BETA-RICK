@@ -1,8 +1,20 @@
 """
-Utils package initialization
+Утилиты - инициализация модуля
 """
+from .auth import is_host, login_required, admin_only
+from .cache import cache, SimpleCache
+from .date_utils import calculate_days_left, get_work_status, format_date, format_time
+from .template_helpers import inject_common_variables
 
-# Пустой файл - импорты делаются напрямую
-# Например: from utils.decorators import host_required
-
-__all__ = []
+__all__ = [
+    'is_host',
+    'login_required',
+    'admin_only',
+    'cache',
+    'SimpleCache',
+    'calculate_days_left',
+    'get_work_status',
+    'format_date',
+    'format_time',
+    'inject_common_variables',
+]

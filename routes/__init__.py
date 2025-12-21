@@ -1,7 +1,8 @@
 """
-Routes package initialization
+Routes - инициализация модуля
 """
+from .public import public_bp
+from .admin import admin_bp
+from .api import api_bp
 
-# Пустой файл - импорты делаются напрямую в app.py
-
-__all__ = []
+__all__ = ['public_bp', 'admin_bp', 'api_bp']

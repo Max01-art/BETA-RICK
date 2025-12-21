@@ -1,89 +1,85 @@
 """
-Главный файл приложения BETA-RICK
+Главный файл приложения Classmate
+Структурированная версия
 """
-from flask import Flask, render_template
 import os
+from flask import Flask
+from flask_socketio import SocketIO
 
-from config import get_config
-from core.database import init_db
-from utils.decorators import register_context_processors
+# Импорт конфигурации
+from config.settings import (
+    SECRET_KEY, UPLOAD_FOLDER, MAX_CONTENT_LENGTH,
+    SOCKETIO_CORS_ALLOWED_ORIGINS
+)
 
-# ПРЯМЫЕ импорты blueprints (не через routes пакет!)
-from routes.main import main_bp
-from routes.subjects import subjects_bp
-from routes.tests import tests_bp
-from routes.homework import homework_bp
-from routes.news import news_bp
-from routes.auth import auth_bp
-from routes.notifications import notifications_bp
+# Импорт инициализации БД
+from models.database import init_database
+
+# Импорт blueprints
+from routes.public import public_bp
+from routes.admin import admin_bp
 from routes.api import api_bp
-from routes.import_routes import import_routes_bp
+
+# Импорт контекстных процессоров
+from utils.template_helpers import inject_common_variables
+
+# Импорт WebSocket обработчиков
+from services.websocket_service import register_socketio_handlers
+
+# Импорт фоновых задач
+from services.scheduler_service import start_scheduler
+from services.email_service import start_email_worker
 
 
 def create_app():
     """Фабрика приложений Flask"""
     app = Flask(__name__)
     
-    # Загрузка конфигурации
-    config_obj = get_config()
-    app.config.from_object(config_obj)
+    # Конфигурация
+    app.secret_key = SECRET_KEY
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
     
-    print(f"🚀 Starting {app.config['APP_NAME']} v{app.config['APP_VERSION']}")
+    # Создаем директорию для загрузок
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+    
+    # Инициализация SocketIO
+    socketio = SocketIO(app, cors_allowed_origins=SOCKETIO_CORS_ALLOWED_ORIGINS)
+    
+    # Регистрация blueprints
+    app.register_blueprint(public_bp)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(api_bp, url_prefix='/api')
+    
+    # Регистрация контекстных процессоров
+    app.context_processor(inject_common_variables)
+    
+    # Регистрация WebSocket обработчиков
+    register_socketio_handlers(socketio)
     
     # Инициализация базы данных
     with app.app_context():
-        init_db()
+        init_database()
     
-    # Регистрация контекст процессоров
-    register_context_processors(app)
+    # Запуск фоновых задач
+    start_email_worker()
+    start_scheduler()
     
-    # Регистрация blueprints
-    app.register_blueprint(main_bp)
-    app.register_blueprint(subjects_bp, url_prefix='/subjects')
-    app.register_blueprint(tests_bp, url_prefix='/tests')
-    app.register_blueprint(homework_bp, url_prefix='/homework')
-    app.register_blueprint(news_bp, url_prefix='/news')
-    app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(notifications_bp, url_prefix='/notifications')
-    app.register_blueprint(api_bp, url_prefix='/api')
-    app.register_blueprint(import_routes_bp, url_prefix='/import')
-    
-    print("✅ All blueprints registered")
-    
-    # Обработчики ошибок
-    @app.errorhandler(404)
-    def not_found(error):
-        return render_template('error.html', 
-                             error_code=404, 
-                             error_message='Lapa nav atrasta'), 404
-    
-    @app.errorhandler(500)
-    def internal_error(error):
-        return render_template('error.html', 
-                             error_code=500, 
-                             error_message='Servera kļūda'), 500
-    
-    # Создание необходимых папок
-    folders = ['static/uploads', 'static/uploads/avatars', 
-               'static/uploads/news', 'static/uploads/exports', 'logs']
-    
-    for folder in folders:
-        try:
-            os.makedirs(folder, exist_ok=True)
-        except:
-            pass
-    
-    print("✅ App initialized successfully")
-    return app
+    return app, socketio
 
 
 # Создание приложения
-app = create_app()
+app, socketio = create_app()
 
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    debug = os.environ.get('FLASK_ENV') != 'production'
-    
-    print(f"🌐 Running on port {port}")
-    app.run(host='0.0.0.0', port=port, debug=debug)
+    print(f"🌐 Starting server on port: {port}")
+    socketio.run(
+        app,
+        host='0.0.0.0',
+        port=port,
+        debug=False,
+        allow_unsafe_werkzeug=True
+    )
