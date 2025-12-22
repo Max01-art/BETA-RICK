@@ -1,0 +1,617 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Sākums{% endblock %}
+
+{% block body_class %}page-home{% endblock %}
+
+{% block content %}
+<div class="container">
+    
+    <!-- Hero Section -->
+    <section class="hero fade-in">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                Sveicināts, Student! 🎓
+            </h1>
+            <p class="hero-subtitle">
+                Tavs viedais palīgs studiju organizēšanā. Viss vienuviet - testi, mājasdarbi, termiņi.
+            </p>
+            
+            <!-- Quick Actions -->
+            <div class="hero-actions">
+                <a href="/all" class="btn btn-primary btn-lg">
+                    <i class="fas fa-list"></i>
+                    Visi darbi
+                </a>
+                <a href="/homework" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-book"></i>
+                    Mājasdarbi
+                </a>
+            </div>
+            
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-danger">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="todayCount">0</div>
+                        <div class="stat-label">Šodien</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="tomorrowCount">0</div>
+                        <div class="stat-label">Rīt</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-info">
+                        <i class="fas fa-calendar-week"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="weekCount">0</div>
+                        <div class="stat-label">Šonedēļ</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalCount">0</div>
+                        <div class="stat-label">Kopā</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Latest News Section (if available) -->
+    {% if news and news|length > 0 %}
+    <section class="section fade-in fade-in-delay-1">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-newspaper"></i>
+                Jaunākās ziņas
+            </h2>
+            <a href="/news" class="section-link">Visas ziņas →</a>
+        </div>
+        
+        <div class="news-grid">
+            {% for item in news[:3] %}
+            <article class="news-card">
+                {% if item.image_url %}
+                <div class="news-image" style="background-image: url('{{ item.image_url }}')"></div>
+                {% else %}
+                <div class="news-image news-image-placeholder">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                {% endif %}
+                
+                <div class="news-content">
+                    <div class="news-date">
+                        <i class="far fa-calendar"></i>
+                        {{ item.date }}
+                    </div>
+                    <h3 class="news-title">{{ item.title }}</h3>
+                    <p class="news-excerpt">{{ item.content[:120] }}...</p>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+    
+    <!-- Work by Subject Section -->
+    <section class="section fade-in fade-in-delay-2">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-books"></i>
+                Darbi pa priekšmetiem
+            </h2>
+        </div>
+        
+        {% if work_by_subject and work_by_subject|length > 0 %}
+        <div class="subjects-grid">
+            {% for subject_name, works in work_by_subject.items() %}
+            <div class="subject-card">
+                <div class="subject-header">
+                    <div class="subject-icon">
+                        {{ subject_name[0]|upper }}
+                    </div>
+                    <div class="subject-info">
+                        <h3 class="subject-name">{{ subject_name }}</h3>
+                        <div class="subject-meta">
+                            {{ works|length }} {{ 'darbs' if works|length == 1 else 'darbi' }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="subject-works">
+                    {% for work in works[:3] %}
+                    <div class="work-item">
+                        <div class="work-info">
+                            <span class="work-type">{{ work.type }}</span>
+                            <span class="work-date">{{ work.date }}</span>
+                        </div>
+                        {% if work.days_left is defined %}
+                        <div class="work-badge badge-{{ 'today' if work.days_left == 0 else 'tomorrow' if work.days_left == 1 else 'soon' if work.days_left <= 7 else 'future' }}">
+                            {% if work.days_left == 0 %}
+                                Šodien!
+                            {% elif work.days_left == 1 %}
+                                Rīt
+                            {% else %}
+                                {{ work.days_left }}d
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    {% if works|length > 3 %}
+                    <a href="/subject/{{ subject_name }}" class="subject-link">
+                        Skatīt visus ({{ works|length }}) →
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <h3>Nav darbu</h3>
+            <p>Pagaidām nav pievienotu darbu. {% if is_host %}Sāc ar pievienošanu!{% endif %}</p>
+            {% if is_host %}
+            <a href="/add" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Pievienot darbu
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+    
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+/* Hero Section */
+.hero {
+    padding: 3rem 0;
+    text-align: center;
+}
+
+.hero-title {
+    margin-bottom: 1rem;
+    animation: slideDown 0.8s ease;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--gray-600);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    animation: slideUp 0.8s ease 0.2s backwards;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    animation: slideUp 0.8s ease 0.4s backwards;
+}
+
+.stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    animation: scaleIn 0.5s ease backwards;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.6s; }
+.stat-card:nth-child(2) { animation-delay: 0.7s; }
+.stat-card:nth-child(3) { animation-delay: 0.8s; }
+.stat-card:nth-child(4) { animation-delay: 0.9s; }
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.stat-icon-danger {
+    background: rgba(252, 129, 129, 0.15);
+    color: var(--danger);
+}
+
+.stat-icon-warning {
+    background: rgba(246, 173, 85, 0.15);
+    color: var(--warning);
+}
+
+.stat-icon-info {
+    background: rgba(66, 153, 225, 0.15);
+    color: var(--info);
+}
+
+.stat-icon-success {
+    background: rgba(72, 187, 120, 0.15);
+    color: var(--success);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    line-height: 1;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    font-weight: 600;
+}
+
+/* Section Headers */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0;
+}
+
+.section-link {
+    font-weight: 600;
+    color: var(--primary-start);
+    transition: all var(--transition-fast);
+}
+
+.section-link:hover {
+    transform: translateX(4px);
+}
+
+/* News Grid */
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.news-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+}
+
+.news-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+.news-image {
+    width: 100%;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+}
+
+.news-image-placeholder {
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.news-content {
+    padding: 1.5rem;
+}
+
+.news-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray-500);
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+}
+
+.news-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.news-excerpt {
+    color: var(--gray-600);
+    line-height: 1.6;
+}
+
+/* Subjects Grid */
+.subjects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.subject-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+}
+
+.subject-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.subject-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--gray-100);
+}
+
+.subject-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-md);
+    background: var(--primary-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+}
+
+.subject-name {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.subject-meta {
+    color: var(--gray-500);
+    font-size: 0.875rem;
+}
+
+.subject-works {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.work-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.work-item:hover {
+    background: var(--gray-100);
+}
+
+.work-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.work-type {
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: 0.9rem;
+}
+
+.work-date {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+.work-badge {
+    padding: 0.375rem 0.875rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.subject-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    color: var(--primary-start);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    margin-top: 0.5rem;
+}
+
+.subject-link:hover {
+    transform: translateX(4px);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.empty-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--gray-400);
+}
+
+.empty-state h3 {
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: var(--gray-600);
+    margin-bottom: 2rem;
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero {
+        padding: 2rem 0;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+    }
+    
+    .stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .subjects-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Calculate and update stats
+function updateStats() {
+    // This would be populated from your backend data
+    // For now, placeholders
+    const stats = {
+        today: 0,
+        tomorrow: 0,
+        week: 0,
+        total: 0
+    };
+    
+    // Count from work_by_subject
+    {% if work_by_subject %}
+        {% for subject_name, works in work_by_subject.items() %}
+            {% for work in works %}
+                {% if work.days_left is defined %}
+                    {% if work.days_left == 0 %}
+                        stats.today++;
+                    {% elif work.days_left == 1 %}
+                        stats.tomorrow++;
+                    {% elif work.days_left <= 7 %}
+                        stats.week++;
+                    {% endif %}
+                    stats.total++;
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+    
+    document.getElementById('todayCount').textContent = {{ stats.today|default(0) }};
+    document.getElementById('tomorrowCount').textContent = {{ stats.tomorrow|default(0) }};
+    document.getElementById('weekCount').textContent = {{ stats.week|default(0) }};
+    document.getElementById('totalCount').textContent = {{ stats.total|default(0) }};
+}
+
+// Run on load
+updateStats();
+</script>
+{% endblock %}
