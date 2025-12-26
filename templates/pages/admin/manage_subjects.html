@@ -1,0 +1,20 @@
+{% extends 'layouts/admin.html' %}
+{% block title %}Pārvaldīt priekšmetus{% endblock %}
+{% block admin_content %}
+<h1>Priekšmeti</h1>
+<div style="margin-bottom:2rem">
+    <a href="/add-subject" class="btn btn-primary">+ Pievienot priekšmetu</a>
+</div>
+<div class="grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem">
+    {% for subject in subjects %}
+    <div class="card">
+        <h3>{{ subject.name }}</h3>
+        <p>{{ subject.work_count }} darbi</p>
+        <div style="margin-top:1rem">
+            <a href="/edit-subject/{{ subject.name }}" class="btn btn-sm">Rediģēt</a>
+            <a href="/delete-subject/{{ subject.name }}" class="btn btn-sm btn-danger">Dzēst</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

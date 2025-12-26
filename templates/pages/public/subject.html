@@ -1,0 +1,650 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}{{ subject.name }} - Priekšmets{% endblock %}
+
+{% block body_class %}page-subject{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section with Subject Color -->
+<section class="subject-hero" style="background: linear-gradient(135deg, {{ subject.color if subject.color else '#667eea' }} 0%, {{ subject.color if subject.color else '#764ba2' }} 100%);">
+    <div class="container">
+        <div class="subject-hero-content">
+            
+            <!-- Icon & Title -->
+            <div class="subject-hero-header">
+                <div class="subject-hero-icon">
+                    {{ subject.name[0]|upper }}
+                </div>
+                <div>
+                    <h1 class="subject-hero-title">{{ subject.name }}</h1>
+                    {% if subject.description %}
+                    <p class="subject-hero-description">{{ subject.description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="subject-hero-stats">
+                <div class="subject-stat-card">
+                    <div class="subject-stat-value">{{ stats.today if stats.today is defined else 0 }}</div>
+                    <div class="subject-stat-label">Šodien</div>
+                </div>
+                <div class="subject-stat-card">
+                    <div class="subject-stat-value">{{ stats.week if stats.week is defined else 0 }}</div>
+                    <div class="subject-stat-label">Šonedēļ</div>
+                </div>
+                <div class="subject-stat-card">
+                    <div class="subject-stat-value">{{ works|length if works else 0 }}</div>
+                    <div class="subject-stat-label">Kopā</div>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            {% if is_host %}
+            <div class="subject-hero-actions">
+                <a href="/edit/subject/{{ subject.name }}" class="btn btn-secondary">
+                    <i class="fas fa-edit"></i>
+                    Rediģēt
+                </a>
+                <a href="/delete/subject/{{ subject.name }}" 
+                   class="btn btn-danger"
+                   onclick="return confirm('Vai tiešām dzēst priekšmetu {{ subject.name }}? Visi ar to saistītie darbi tiks dzēsti!')">
+                    <i class="fas fa-trash-alt"></i>
+                    Dzēst
+                </a>
+            </div>
+            {% endif %}
+            
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    
+    <!-- Tabs Navigation -->
+    <section class="tabs-section">
+        <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="darbi">
+                <i class="fas fa-clipboard-list"></i>
+                Darbi
+            </button>
+            <button class="tab-btn" data-tab="statistika">
+                <i class="fas fa-chart-bar"></i>
+                Statistika
+            </button>
+        </div>
+    </section>
+    
+    <!-- Tab: Darbi -->
+    <section class="tab-content active" id="tab-darbi">
+        
+        {% if works and works|length > 0 %}
+        
+        <!-- Group works by month -->
+        {% set works_by_month = {} %}
+        {% for work in works %}
+            {% set month_key = work.date[:7] %}
+            {% if month_key not in works_by_month %}
+                {% set _ = works_by_month.update({month_key: []}) %}
+            {% endif %}
+            {% set _ = works_by_month[month_key].append(work) %}
+        {% endfor %}
+        
+        <div class="timeline-container">
+            {% for month, month_works in works_by_month.items()|sort %}
+            
+            <div class="timeline-month">
+                <div class="timeline-month-header">
+                    <h2 class="timeline-month-title">
+                        {% set months = ['', 'Janvāris', 'Februāris', 'Marts', 'Aprīlis', 'Maijs', 'Jūnijs', 'Jūlijs', 'Augusts', 'Septembris', 'Oktobris', 'Novembris', 'Decembris'] %}
+                        {{ months[month[5:7]|int] }} {{ month[:4] }}
+                    </h2>
+                    <span class="timeline-month-count">{{ month_works|length }} darbi</span>
+                </div>
+                
+                <div class="timeline-works">
+                    {% for work in month_works|sort(attribute='date') %}
+                    
+                    <div class="timeline-work-item">
+                        
+                        <!-- Date Badge -->
+                        <div class="timeline-date">
+                            <div class="timeline-date-day">{{ work.date[8:10] }}</div>
+                            <div class="timeline-date-month">
+                                {% set months_short = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jūn', 'Jūl', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'] %}
+                                {{ months_short[work.date[5:7]|int] }}
+                            </div>
+                        </div>
+                        
+                        <!-- Work Card -->
+                        <div class="timeline-work-card">
+                            <div class="timeline-work-header">
+                                <h3 class="timeline-work-title">{{ work.type }}</h3>
+                                {% if work.days_left is defined %}
+                                <span class="badge badge-{{ 'today' if work.days_left == 0 else 'tomorrow' if work.days_left == 1 else 'soon' if work.days_left <= 7 else 'future' }}">
+                                    {% if work.days_left == 0 %}
+                                        🔥 Šodien
+                                    {% elif work.days_left == 1 %}
+                                        ⏰ Rīt
+                                    {% elif work.days_left < 0 %}
+                                        ❌ Nokavēts
+                                    {% else %}
+                                        📅 {{ work.days_left }}d
+                                    {% endif %}
+                                </span>
+                                {% endif %}
+                            </div>
+                            
+                            {% if work.description %}
+                            <p class="timeline-work-description">{{ work.description }}</p>
+                            {% endif %}
+                            
+                            <div class="timeline-work-meta">
+                                <span><i class="far fa-clock"></i> {{ work.time if work.time else '23:59' }}</span>
+                            </div>
+                            
+                            <div class="timeline-work-actions">
+                                <a href="/calendar/{{ work.source if work.source is defined else 'test' }}/{{ work.id }}" class="timeline-action-btn">
+                                    <i class="far fa-calendar-plus"></i>
+                                    Kalendārs
+                                </a>
+                                {% if is_host %}
+                                <a href="/delete/{{ work.id }}" 
+                                   class="timeline-action-btn timeline-action-danger"
+                                   onclick="return confirm('Vai tiešām dzēst?')">
+                                    <i class="far fa-trash-alt"></i>
+                                    Dzēst
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    {% endfor %}
+                </div>
+            </div>
+            
+            {% endfor %}
+        </div>
+        
+        {% else %}
+        
+        {% include 'components/empty_state.html' with 
+            icon='fas fa-clipboard', 
+            title='Nav darbu', 
+            message='Šim priekšmetam vēl nav pievienotu darbu.',
+            action_url='/add' if is_host else none,
+            action_text='Pievienot darbu',
+            action_icon='fas fa-plus' %}
+        
+        {% endif %}
+        
+    </section>
+    
+    <!-- Tab: Statistika -->
+    <section class="tab-content" id="tab-statistika">
+        <div class="stats-grid">
+            
+            <!-- Upcoming Works -->
+            <div class="stat-box">
+                <h3 class="stat-box-title">
+                    <i class="fas fa-calendar-week"></i>
+                    Gaidāmie darbi
+                </h3>
+                <div class="stat-box-content">
+                    <div class="stat-item">
+                        <span class="stat-label">Šodien:</span>
+                        <span class="stat-value">{{ stats.today if stats.today is defined else 0 }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Rīt:</span>
+                        <span class="stat-value">{{ stats.tomorrow if stats.tomorrow is defined else 0 }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Šonedēļ:</span>
+                        <span class="stat-value">{{ stats.week if stats.week is defined else 0 }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Work Types -->
+            <div class="stat-box">
+                <h3 class="stat-box-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Darbu veidi
+                </h3>
+                <div class="stat-box-content">
+                    <div class="stat-item">
+                        <span class="stat-label">Testi:</span>
+                        <span class="stat-value">{{ stats.tests if stats.tests is defined else 0 }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Mājasdarbi:</span>
+                        <span class="stat-value">{{ stats.homework if stats.homework is defined else 0 }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Average Time -->
+            <div class="stat-box">
+                <h3 class="stat-box-title">
+                    <i class="fas fa-clock"></i>
+                    Vidējais laiks
+                </h3>
+                <div class="stat-box-content">
+                    <p class="stat-description">
+                        Vidēji darbi ir {{ stats.avg_days if stats.avg_days is defined else 7 }} dienas pirms termiņa.
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+    
+</div>
+
+{% endblock %}
+
+{% block styles %}
+<style>
+/* Hero Section */
+.subject-hero {
+    padding: 4rem 0;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.subject-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.subject-hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.subject-hero-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.subject-hero-icon {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.subject-hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.subject-hero-description {
+    font-size: 1.25rem;
+    opacity: 0.95;
+}
+
+.subject-hero-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.subject-stat-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem 2rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.subject-stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.subject-stat-label {
+    font-size: 0.9375rem;
+    opacity: 0.9;
+}
+
+.subject-hero-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Tabs */
+.tabs-section {
+    margin: -2rem 0 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+.tabs-nav {
+    display: flex;
+    gap: 0.5rem;
+    background: white;
+    padding: 0.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.tab-btn:hover {
+    background: var(--gray-50);
+    color: var(--primary-start);
+}
+
+.tab-btn.active {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Timeline */
+.timeline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.timeline-month-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid var(--gray-200);
+}
+
+.timeline-month-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--gray-800);
+}
+
+.timeline-month-count {
+    color: var(--gray-500);
+    font-weight: 600;
+}
+
+.timeline-works {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.timeline-work-item {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 2rem;
+}
+
+.timeline-date {
+    text-align: center;
+    padding: 1rem;
+    background: var(--primary-gradient);
+    border-radius: var(--radius-md);
+    color: white;
+}
+
+.timeline-date-day {
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    line-height: 1;
+}
+
+.timeline-date-month {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.5rem;
+    opacity: 0.9;
+}
+
+.timeline-work-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+}
+
+.timeline-work-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateX(8px);
+}
+
+.timeline-work-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.timeline-work-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gray-800);
+}
+
+.timeline-work-description {
+    color: var(--gray-700);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.timeline-work-meta {
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.timeline-work-actions {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.timeline-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--gray-100);
+    color: var(--gray-700);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.timeline-action-btn:hover {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.timeline-action-danger:hover {
+    background: var(--danger);
+}
+
+/* Statistics */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.stat-box {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-box-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: var(--gray-800);
+}
+
+.stat-box-title i {
+    color: var(--primary-start);
+}
+
+.stat-box-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+}
+
+.stat-label {
+    font-weight: 600;
+    color: var(--gray-700);
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-description {
+    color: var(--gray-600);
+    line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .subject-hero {
+        padding: 2rem 0;
+    }
+    
+    .subject-hero-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .subject-hero-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 2.5rem;
+    }
+    
+    .subject-hero-title {
+        font-size: 2rem;
+    }
+    
+    .subject-hero-stats {
+        flex-wrap: wrap;
+    }
+    
+    .subject-stat-card {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .timeline-work-item {
+        grid-template-columns: 80px 1fr;
+        gap: 1rem;
+    }
+    
+    .timeline-date {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .timeline-date-day {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const tabId = this.dataset.tab;
+        
+        // Update buttons
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Update content
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+    });
+});
+</script>
+{% endblock %}

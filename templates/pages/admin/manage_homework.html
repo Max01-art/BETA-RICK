@@ -1,0 +1,23 @@
+{% extends 'layouts/admin.html' %}
+{% block title %}Pārvaldīt mājasdarbus{% endblock %}
+{% block admin_content %}
+<h1>Mājasdarbi</h1>
+<table style="width:100%;border-collapse:collapse">
+    <thead>
+        <tr><th>Priekšmets</th><th>Nosaukums</th><th>Datums</th><th>Darbības</th></tr>
+    </thead>
+    <tbody>
+        {% for hw in homework %}
+        <tr>
+            <td>{{ hw.subject }}</td>
+            <td>{{ hw.type }}</td>
+            <td>{{ hw.date }}</td>
+            <td>
+                <a href="/edit/{{ hw.id }}" class="btn btn-sm">Rediģēt</a>
+                <a href="/delete/{{ hw.id }}" class="btn btn-sm btn-danger">Dzēst</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'layouts/admin.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block admin_content %}
+<h1>Dashboard</h1>
+<div class="stats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin:2rem 0">
+    <div class="card"><h3>{{ stats.total_works }}</h3><p>Kopā darbi</p></div>
+    <div class="card"><h3>{{ stats.total_subjects }}</h3><p>Priekšmeti</p></div>
+    <div class="card"><h3>{{ stats.total_news }}</h3><p>Ziņas</p></div>
+    <div class="card"><h3>{{ stats.users }}</h3><p>Lietotāji</p></div>
+</div>
+{% endblock %}

@@ -1,0 +1,522 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Taimeris{% endblock %}
+
+{% block body_class %}page-timer{% endblock %}
+
+{% block content %}
+<div class="container">
+    
+    <!-- Page Header -->
+    <section class="timer-header fade-in">
+        <h1 class="page-title">
+            <i class="fas fa-clock"></i>
+            Pomodoro Taimeris
+        </h1>
+        <p class="page-subtitle">
+            Efektīva mācīšanās ar Pomodoro tehniku
+        </p>
+    </section>
+    
+    <!-- Timer Main -->
+    <section class="timer-section fade-in fade-in-delay-1">
+        <div class="timer-container">
+            
+            <!-- Mode Switch -->
+            <div class="timer-mode-switch">
+                <button class="mode-btn active" data-mode="work">
+                    <i class="fas fa-book"></i>
+                    <span>Darbs</span>
+                </button>
+                <button class="mode-btn" data-mode="break">
+                    <i class="fas fa-coffee"></i>
+                    <span>Pauze</span>
+                </button>
+            </div>
+            
+            <!-- Timer Circle -->
+            <div class="timer-circle-wrapper">
+                <svg class="timer-circle" viewBox="0 0 300 300">
+                    <circle class="timer-circle-bg" cx="150" cy="150" r="135"></circle>
+                    <circle class="timer-circle-progress" cx="150" cy="150" r="135" id="timerProgress"></circle>
+                </svg>
+                
+                <div class="timer-display">
+                    <div class="timer-time" id="timerDisplay">25:00</div>
+                    <div class="timer-label" id="timerLabel">Koncentrēšanās laiks</div>
+                </div>
+            </div>
+            
+            <!-- Controls -->
+            <div class="timer-controls">
+                <button class="timer-btn timer-btn-primary" id="startBtn">
+                    <i class="fas fa-play"></i>
+                    <span>Sākt</span>
+                </button>
+                <button class="timer-btn timer-btn-secondary" id="pauseBtn" style="display: none;">
+                    <i class="fas fa-pause"></i>
+                    <span>Pauze</span>
+                </button>
+                <button class="timer-btn timer-btn-secondary" id="resetBtn">
+                    <i class="fas fa-redo"></i>
+                    <span>Atiestatīt</span>
+                </button>
+            </div>
+            
+            <!-- Settings -->
+            <div class="timer-settings">
+                <div class="timer-setting">
+                    <label>Darba laiks (min):</label>
+                    <input type="number" id="workDuration" value="25" min="1" max="60">
+                </div>
+                <div class="timer-setting">
+                    <label>Pauzes laiks (min):</label>
+                    <input type="number" id="breakDuration" value="5" min="1" max="30">
+                </div>
+            </div>
+            
+        </div>
+    </section>
+    
+    <!-- Today's Sessions -->
+    <section class="timer-stats fade-in fade-in-delay-2">
+        <div class="stats-grid-2">
+            
+            <!-- Today's Progress -->
+            <div class="stat-card-timer">
+                <div class="stat-card-header">
+                    <h3>
+                        <i class="fas fa-fire"></i>
+                        Šodien
+                    </h3>
+                </div>
+                <div class="stat-card-body">
+                    <div class="stat-big" id="todayMinutes">0</div>
+                    <div class="stat-label-big">Minūtes mācībās</div>
+                    <div class="stat-detail">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="todaySessions">0</span> pabeigtas sesijas
+                    </div>
+                </div>
+            </div>
+            
+            <!-- This Week -->
+            <div class="stat-card-timer">
+                <div class="stat-card-header">
+                    <h3>
+                        <i class="fas fa-calendar-week"></i>
+                        Šonedēļ
+                    </h3>
+                </div>
+                <div class="stat-card-body">
+                    <div class="stat-big" id="weekMinutes">0</div>
+                    <div class="stat-label-big">Minūtes kopā</div>
+                    <div class="stat-detail">
+                        <i class="fas fa-chart-line"></i>
+                        Vidēji <span id="avgDaily">0</span> min/dienā
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+    
+    <!-- Session History -->
+    <section class="timer-history fade-in fade-in-delay-3">
+        <h2 class="section-title">
+            <i class="fas fa-history"></i>
+            Sesiju vēsture
+        </h2>
+        
+        <div class="history-list" id="historyList">
+            <!-- Sessions will be added here by JS -->
+            <div class="history-empty">
+                <i class="fas fa-clipboard-list"></i>
+                <p>Pagaidām nav pabeigtu sesiju</p>
+            </div>
+        </div>
+    </section>
+    
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+/* Timer Header */
+.timer-header {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+/* Timer Section */
+.timer-section {
+    max-width: 600px;
+    margin: 0 auto 3rem;
+}
+
+.timer-container {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: 3rem;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+/* Mode Switch */
+.timer-mode-switch {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    background: var(--gray-100);
+    padding: 0.5rem;
+    border-radius: var(--radius-lg);
+}
+
+.mode-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.mode-btn:hover {
+    background: white;
+}
+
+.mode-btn.active {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.mode-btn.active[data-mode="break"] {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+/* Timer Circle */
+.timer-circle-wrapper {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto 2rem;
+}
+
+.timer-circle {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.timer-circle-bg {
+    fill: none;
+    stroke: var(--gray-200);
+    stroke-width: 12;
+}
+
+.timer-circle-progress {
+    fill: none;
+    stroke: url(#timerGradient);
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke-dasharray: 848;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear;
+}
+
+.timer-display {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.timer-time {
+    font-size: 4rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.timer-label {
+    font-size: 1rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+/* Controls */
+.timer-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.timer-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.timer-btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.timer-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+}
+
+.timer-btn-secondary {
+    background: var(--gray-100);
+    color: var(--gray-700);
+}
+
+.timer-btn-secondary:hover {
+    background: var(--gray-200);
+}
+
+/* Settings */
+.timer-settings {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.timer-setting {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.timer-setting label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-600);
+}
+
+.timer-setting input {
+    width: 80px;
+    padding: 0.625rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--gray-800);
+}
+
+.timer-setting input:focus {
+    outline: none;
+    border-color: var(--primary-start);
+}
+
+/* Stats */
+.stats-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card-timer {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+}
+
+.stat-card-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+    color: var(--gray-700);
+}
+
+.stat-big {
+    font-size: 4rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.stat-label-big {
+    font-size: 1rem;
+    color: var(--gray-600);
+    font-weight: 500;
+    margin: 1rem 0;
+}
+
+.stat-detail {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    color: var(--gray-700);
+    font-weight: 500;
+}
+
+/* History */
+.timer-history {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.history-list {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.history-empty {
+    text-align: center;
+    padding: 3rem;
+    color: var(--gray-500);
+}
+
+.history-empty i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-item-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.history-item-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+}
+
+.history-item-details h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.history-item-details p {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    margin: 0;
+}
+
+.history-item-duration {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--primary-start);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .timer-container {
+        padding: 2rem 1.5rem;
+    }
+    
+    .timer-circle-wrapper {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .timer-time {
+        font-size: 3rem;
+    }
+    
+    .timer-controls {
+        flex-wrap: wrap;
+    }
+    
+    .timer-settings {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .timer-setting input {
+        width: 100%;
+    }
+    
+    .stats-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<!-- SVG Gradient -->
+<svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+    <defs>
+        <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+        </linearGradient>
+    </defs>
+</svg>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+{% endblock %}

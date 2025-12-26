@@ -1,0 +1,175 @@
+<!-- News Card Component -->
+<!-- Usage: {% include 'components/news_card.html' with news=news_item %} -->
+
+<article class="news-card" data-news-id="{{ news.id if news.id is defined else '' }}">
+    
+    <!-- News Image -->
+    <div class="news-card-image">
+        {% if news.image_url %}
+        <img src="{{ news.image_url }}" alt="{{ news.title }}" loading="lazy">
+        {% else %}
+        <div class="news-card-image-placeholder">
+            <i class="fas fa-newspaper"></i>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- News Content -->
+    <div class="news-card-content">
+        
+        <!-- Date -->
+        <div class="news-card-date">
+            <i class="far fa-calendar"></i>
+            <span>{{ news.date if news.date else 'Nav datuma' }}</span>
+        </div>
+        
+        <!-- Title -->
+        <h3 class="news-card-title">{{ news.title }}</h3>
+        
+        <!-- Excerpt -->
+        <p class="news-card-excerpt">
+            {% if news.content %}
+                {{ news.content[:120] }}{% if news.content|length > 120 %}...{% endif %}
+            {% else %}
+                Nav apraksta.
+            {% endif %}
+        </p>
+        
+        <!-- Read More -->
+        <a href="/news/{{ news.id if news.id is defined else '#' }}" class="news-card-link">
+            <span>Lasīt vairāk</span>
+            <i class="fas fa-arrow-right"></i>
+        </a>
+        
+    </div>
+    
+</article>
+
+<style>
+/* News Card Styles */
+.news-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.news-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Image */
+.news-card-image {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    position: relative;
+}
+
+.news-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.news-card:hover .news-card-image img {
+    transform: scale(1.05);
+}
+
+.news-card-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 4rem;
+}
+
+/* Content */
+.news-card-content {
+    padding: var(--spacing-xl);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Date */
+.news-card-date {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--gray-500);
+    font-size: 0.875rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.news-card-date i {
+    color: var(--primary-start);
+}
+
+/* Title */
+.news-card-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.3;
+}
+
+/* Excerpt */
+.news-card-excerpt {
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-lg);
+    flex: 1;
+}
+
+/* Link */
+.news-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--primary-start);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    margin-top: auto;
+}
+
+.news-card-link:hover {
+    color: var(--primary-end);
+    gap: var(--spacing-md);
+}
+
+.news-card-link i {
+    transition: transform var(--transition-fast);
+}
+
+.news-card-link:hover i {
+    transform: translateX(4px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .news-card-image {
+        height: 180px;
+    }
+    
+    .news-card-content {
+        padding: var(--spacing-lg);
+    }
+    
+    .news-card-title {
+        font-size: 1.125rem;
+    }
+}
+</style>

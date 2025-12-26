@@ -1,0 +1,17 @@
+{% extends 'layouts/base.html' %}
+{% block title %}Kalendārs{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="calendar-header">
+        <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+        <h1 id="monthYear"></h1>
+        <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div class="calendar-grid" id="calendar"></div>
+    <div class="calendar-legend">
+        <span><i class="fas fa-circle" style="color:#fc8181"></i> Šodien</span>
+        <span><i class="fas fa-circle" style="color:#f6ad55"></i> Rīt</span>
+        <span><i class="fas fa-circle" style="color:#4299e1"></i> Drīz</span>
+    </div>
+</div>
+{% endblock %}

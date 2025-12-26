@@ -1,0 +1,144 @@
+<!-- Empty State Component -->
+<!-- Usage: {% include 'components/empty_state.html' with icon='fa-inbox', title='Nav darbu', message='Pagaidām nav pievienotu darbu.', action_url='/add', action_text='Pievienot darbu' %} -->
+
+<div class="empty-state">
+    
+    <!-- Icon -->
+    <div class="empty-state-icon">
+        <i class="{{ icon if icon else 'fas fa-inbox' }}"></i>
+    </div>
+    
+    <!-- Title -->
+    <h3 class="empty-state-title">{{ title if title else 'Nav datu' }}</h3>
+    
+    <!-- Message -->
+    <p class="empty-state-message">
+        {{ message if message else 'Šeit pagaidām nav nekā.' }}
+    </p>
+    
+    <!-- Action Button (optional) -->
+    {% if action_url %}
+    <a href="{{ action_url }}" class="btn btn-primary empty-state-action">
+        {% if action_icon %}
+        <i class="{{ action_icon }}"></i>
+        {% endif %}
+        {{ action_text if action_text else 'Pievienot' }}
+    </a>
+    {% endif %}
+    
+</div>
+
+<style>
+/* Empty State Styles */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Icon */
+.empty-state-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto var(--spacing-xl);
+    border-radius: 50%;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    color: var(--gray-400);
+    position: relative;
+    animation: float 3s ease-in-out infinite;
+}
+
+.empty-state-icon::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    opacity: 0.1;
+    z-index: -1;
+}
+
+/* Title */
+.empty-state-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Message */
+.empty-state-message {
+    color: var(--gray-600);
+    line-height: 1.6;
+    font-size: 1.0625rem;
+    margin-bottom: var(--spacing-xl);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Action Button */
+.empty-state-action {
+    margin-top: var(--spacing-lg);
+}
+
+/* Animation */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .empty-state {
+        padding: 3rem 1.5rem;
+    }
+    
+    .empty-state-icon {
+        width: 100px;
+        height: 100px;
+        font-size: 3rem;
+    }
+    
+    .empty-state-title {
+        font-size: 1.5rem;
+    }
+    
+    .empty-state-message {
+        font-size: 1rem;
+    }
+}
+
+/* Variations */
+.empty-state.empty-state-sm {
+    padding: 2rem 1rem;
+}
+
+.empty-state.empty-state-sm .empty-state-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-lg);
+}
+
+.empty-state.empty-state-sm .empty-state-title {
+    font-size: 1.25rem;
+}
+
+.empty-state.empty-state-sm .empty-state-message {
+    font-size: 0.9375rem;
+}
+</style>

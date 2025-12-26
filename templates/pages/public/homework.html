@@ -1,0 +1,625 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Mājasdarbi{% endblock %}
+
+{% block body_class %}page-homework{% endblock %}
+
+{% block content %}
+<div class="container">
+    
+    <!-- Page Header -->
+    <section class="page-header fade-in">
+        <div class="page-header-content">
+            <h1 class="page-title">
+                <i class="fas fa-book"></i>
+                Mājasdarbi
+            </h1>
+            <p class="page-subtitle">
+                Visi mājasdarbi ar iespēju atzīmēt izpildītos
+            </p>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="quick-stat">
+                <span class="quick-stat-value" id="totalHomework">0</span>
+                <span class="quick-stat-label">Kopā</span>
+            </div>
+            <div class="quick-stat quick-stat-danger">
+                <span class="quick-stat-value" id="todayHomework">0</span>
+                <span class="quick-stat-label">Šodien</span>
+            </div>
+            <div class="quick-stat quick-stat-success">
+                <span class="quick-stat-value" id="completedHomework">0</span>
+                <span class="quick-stat-label">Izpildīti</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Filters -->
+    <section class="filters-section fade-in fade-in-delay-1">
+        <div class="filters-container">
+            
+            <!-- Filter by Subject -->
+            {% if subjects %}
+            <div class="filter-group">
+                <label class="filter-label">Priekšmets:</label>
+                <select class="filter-select" id="subjectFilter">
+                    <option value="all">Visi priekšmeti</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.name }}">{{ subject.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            
+            <!-- Sort -->
+            <div class="filter-group">
+                <label class="filter-label">Kārtot:</label>
+                <select class="filter-select" id="sortSelect">
+                    <option value="date-asc">Datums (vecākais)</option>
+                    <option value="date-desc" selected>Datums (jaunākais)</option>
+                    <option value="subject">Priekšmets (A-Z)</option>
+                    <option value="days-left">Laiks līdz termiņam</option>
+                </select>
+            </div>
+            
+            <!-- Show Completed -->
+            <div class="filter-group">
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="showCompleted" checked>
+                    <span>Rādīt izpildītos</span>
+                </label>
+            </div>
+            
+        </div>
+    </section>
+    
+    <!-- Homework List -->
+    <section class="homework-section fade-in fade-in-delay-2">
+        {% if homework and homework|length > 0 %}
+        
+        <div class="homework-list" id="homeworkContainer">
+            {% for hw in homework %}
+            <div class="homework-item" 
+                 data-id="{{ hw.id }}"
+                 data-subject="{{ hw.subject }}"
+                 data-date="{{ hw.date }}"
+                 data-days-left="{{ hw.days_left if hw.days_left is defined else 999 }}">
+                
+                <!-- Checkbox -->
+                <div class="homework-checkbox">
+                    <input type="checkbox" 
+                           id="hw-{{ hw.id }}" 
+                           class="homework-check"
+                           data-id="{{ hw.id }}">
+                    <label for="hw-{{ hw.id }}"></label>
+                </div>
+                
+                <!-- Content -->
+                <div class="homework-content">
+                    
+                    <!-- Header -->
+                    <div class="homework-header">
+                        <span class="homework-subject" style="background: {{ hw.subject_color if hw.subject_color is defined else 'var(--primary-gradient)' }}">
+                            {{ hw.subject }}
+                        </span>
+                        
+                        {% if hw.days_left is defined %}
+                        <span class="badge badge-{{ 'today' if hw.days_left == 0 else 'tomorrow' if hw.days_left == 1 else 'soon' if hw.days_left <= 7 else 'future' }}">
+                            {% if hw.days_left == 0 %}
+                                🔥 Šodien!
+                            {% elif hw.days_left == 1 %}
+                                ⏰ Rīt
+                            {% elif hw.days_left < 0 %}
+                                ❌ Nokavēts
+                            {% else %}
+                                📅 {{ hw.days_left }}d
+                            {% endif %}
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Title -->
+                    <h3 class="homework-title">{{ hw.type }}</h3>
+                    
+                    <!-- Meta -->
+                    <div class="homework-meta">
+                        <div class="homework-meta-item">
+                            <i class="far fa-calendar"></i>
+                            <span>{{ hw.date }}</span>
+                        </div>
+                        {% if hw.time %}
+                        <div class="homework-meta-item">
+                            <i class="far fa-clock"></i>
+                            <span>{{ hw.time }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Description -->
+                    {% if hw.description %}
+                    <p class="homework-description">{{ hw.description }}</p>
+                    {% endif %}
+                    
+                    <!-- Actions -->
+                    <div class="homework-actions">
+                        <a href="/calendar/homework/{{ hw.id }}" class="homework-action-btn">
+                            <i class="far fa-calendar-plus"></i>
+                            <span>Kalendārs</span>
+                        </a>
+                        
+                        {% if is_host %}
+                        <a href="/delete/{{ hw.id }}" 
+                           class="homework-action-btn homework-action-delete"
+                           onclick="return confirm('Vai tiešām dzēst?')">
+                            <i class="far fa-trash-alt"></i>
+                            <span>Dzēst</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+                
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% else %}
+        
+        {% include 'components/empty_state.html' with 
+            icon='fas fa-book', 
+            title='Nav mājasdarbu', 
+            message='Pagaidām nav pievienotu mājasdarbu.',
+            action_url='/add' if is_host else none,
+            action_text='Pievienot mājasdarbu',
+            action_icon='fas fa-plus' %}
+        
+        {% endif %}
+    </section>
+    
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 2rem 0;
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: var(--gray-600);
+    font-size: 1.125rem;
+}
+
+.quick-stats {
+    display: flex;
+    gap: 1rem;
+}
+
+.quick-stat {
+    text-align: center;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.quick-stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.quick-stat-danger .quick-stat-value {
+    background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.quick-stat-success .quick-stat-value {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.quick-stat-label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    font-weight: 600;
+    margin-top: 0.25rem;
+}
+
+/* Filters */
+.filters-section {
+    margin-bottom: 2rem;
+}
+
+.filters-container {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 1.5rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: 0.9375rem;
+}
+
+.filter-select {
+    padding: 0.625rem 1rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    color: var(--gray-700);
+    background: white;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-start);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.filter-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+/* Homework List */
+.homework-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.homework-item {
+    display: flex;
+    gap: 1.5rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+}
+
+.homework-item:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateX(4px);
+}
+
+.homework-item.completed {
+    opacity: 0.6;
+}
+
+.homework-item.completed .homework-content {
+    text-decoration: line-through;
+    color: var(--gray-500);
+}
+
+/* Checkbox */
+.homework-checkbox {
+    flex-shrink: 0;
+    padding-top: 0.25rem;
+}
+
+.homework-check {
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--gray-300);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    position: relative;
+}
+
+.homework-check:checked {
+    background: var(--success);
+    border-color: var(--success);
+}
+
+.homework-check:checked::before {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.homework-check:hover {
+    border-color: var(--primary-start);
+    transform: scale(1.1);
+}
+
+/* Content */
+.homework-content {
+    flex: 1;
+}
+
+.homework-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.homework-subject {
+    display: inline-block;
+    padding: 0.375rem 0.875rem;
+    border-radius: var(--radius-full);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.homework-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--gray-800);
+    margin-bottom: 0.75rem;
+}
+
+.homework-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.homework-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+}
+
+.homework-description {
+    color: var(--gray-700);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.homework-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.homework-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--gray-100);
+    color: var(--gray-700);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.homework-action-btn:hover {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.homework-action-delete:hover {
+    background: var(--danger);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .quick-stats {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .quick-stat {
+        padding: 0.75rem 1rem;
+    }
+    
+    .filters-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .homework-item {
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .homework-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Homework completion tracking with localStorage
+const HomeworkManager = {
+    storageKey: 'classmate_homework_completed',
+    
+    getCompleted() {
+        const data = localStorage.getItem(this.storageKey);
+        return data ? JSON.parse(data) : [];
+    },
+    
+    saveCompleted(completedIds) {
+        localStorage.setItem(this.storageKey, JSON.stringify(completedIds));
+    },
+    
+    toggleCompleted(id) {
+        let completed = this.getCompleted();
+        if (completed.includes(id)) {
+            completed = completed.filter(cid => cid !== id);
+        } else {
+            completed.push(id);
+        }
+        this.saveCompleted(completed);
+        return completed.includes(id);
+    },
+    
+    init() {
+        // Load completed state
+        const completed = this.getCompleted();
+        document.querySelectorAll('.homework-check').forEach(checkbox => {
+            const id = checkbox.dataset.id;
+            if (completed.includes(id)) {
+                checkbox.checked = true;
+                checkbox.closest('.homework-item').classList.add('completed');
+            }
+        });
+        
+        // Add event listeners
+        document.querySelectorAll('.homework-check').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const id = this.dataset.id;
+                const isCompleted = HomeworkManager.toggleCompleted(id);
+                const item = this.closest('.homework-item');
+                
+                if (isCompleted) {
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+                
+                updateStats();
+            });
+        });
+    }
+};
+
+// Filter and sort functionality
+const subjectFilter = document.getElementById('subjectFilter');
+const sortSelect = document.getElementById('sortSelect');
+const showCompleted = document.getElementById('showCompleted');
+const homeworkItems = document.querySelectorAll('.homework-item');
+
+function updateStats() {
+    const visible = Array.from(homeworkItems).filter(item => item.style.display !== 'none');
+    const completed = Array.from(homeworkItems).filter(item => item.classList.contains('completed'));
+    let today = 0;
+    
+    visible.forEach(item => {
+        const daysLeft = parseInt(item.dataset.daysLeft);
+        if (daysLeft === 0) today++;
+    });
+    
+    document.getElementById('totalHomework').textContent = visible.length;
+    document.getElementById('todayHomework').textContent = today;
+    document.getElementById('completedHomework').textContent = completed.length;
+}
+
+function applyFilters() {
+    const selectedSubject = subjectFilter ? subjectFilter.value : 'all';
+    const showCompletedChecked = showCompleted.checked;
+    
+    homeworkItems.forEach(item => {
+        const itemSubject = item.dataset.subject;
+        const isCompleted = item.classList.contains('completed');
+        
+        const subjectMatch = selectedSubject === 'all' || itemSubject === selectedSubject;
+        const completedMatch = showCompletedChecked || !isCompleted;
+        
+        if (subjectMatch && completedMatch) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    updateStats();
+}
+
+function applySorting() {
+    const sortValue = sortSelect.value;
+    const container = document.getElementById('homeworkContainer');
+    const itemsArray = Array.from(homeworkItems);
+    
+    itemsArray.sort((a, b) => {
+        switch(sortValue) {
+            case 'date-asc':
+                return new Date(a.dataset.date) - new Date(b.dataset.date);
+            case 'date-desc':
+                return new Date(b.dataset.date) - new Date(a.dataset.date);
+            case 'subject':
+                return a.dataset.subject.localeCompare(b.dataset.subject);
+            case 'days-left':
+                return parseInt(a.dataset.daysLeft) - parseInt(b.dataset.daysLeft);
+        }
+    });
+    
+    itemsArray.forEach(item => container.appendChild(item));
+}
+
+// Event listeners
+if (subjectFilter) subjectFilter.addEventListener('change', applyFilters);
+if (sortSelect) sortSelect.addEventListener('change', applySorting);
+if (showCompleted) showCompleted.addEventListener('change', applyFilters);
+
+// Initialize
+HomeworkManager.init();
+updateStats();
+</script>
+{% endblock %}

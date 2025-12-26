@@ -1,0 +1,626 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Visi darbi{% endblock %}
+
+{% block body_class %}page-all-works{% endblock %}
+
+{% block content %}
+<div class="container">
+    
+    <!-- Page Header -->
+    <section class="page-header fade-in">
+        <div class="page-header-content">
+            <h1 class="page-title">
+                <i class="fas fa-list"></i>
+                Visi darbi
+            </h1>
+            <p class="page-subtitle">
+                Pilns saraksts ar visiem testiem un mājasdar bomb
+            </p>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="quick-stat">
+                <span class="quick-stat-value" id="totalWorks">{{ tests|length if tests else 0 }}</span>
+                <span class="quick-stat-label">Kopā</span>
+            </div>
+            <div class="quick-stat quick-stat-danger">
+                <span class="quick-stat-value" id="todayWorks">0</span>
+                <span class="quick-stat-label">Šodien</span>
+            </div>
+            <div class="quick-stat quick-stat-warning">
+                <span class="quick-stat-value" id="tomorrowWorks">0</span>
+                <span class="quick-stat-label">Rīt</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Filters -->
+    <section class="filters-section fade-in fade-in-delay-1">
+        <div class="filters-container">
+            
+            <!-- Filter by Type -->
+            <div class="filter-group">
+                <label class="filter-label">Veids:</label>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">
+                        Visi
+                    </button>
+                    <button class="filter-btn" data-filter="test">
+                        <i class="fas fa-clipboard-check"></i>
+                        Testi
+                    </button>
+                    <button class="filter-btn" data-filter="homework">
+                        <i class="fas fa-book"></i>
+                        Mājasdarbi
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filter by Subject -->
+            {% if subjects %}
+            <div class="filter-group">
+                <label class="filter-label">Priekšmets:</label>
+                <select class="filter-select" id="subjectFilter">
+                    <option value="all">Visi priekšmeti</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.name }}">{{ subject.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            
+            <!-- Sort -->
+            <div class="filter-group">
+                <label class="filter-label">Kārtot:</label>
+                <select class="filter-select" id="sortSelect">
+                    <option value="date-asc">Datums (vecākais)</option>
+                    <option value="date-desc" selected>Datums (jaunākais)</option>
+                    <option value="subject">Priekšmets (A-Z)</option>
+                    <option value="days-left">Laiks līdz termiņam</option>
+                </select>
+            </div>
+            
+        </div>
+    </section>
+    
+    <!-- Works List -->
+    <section class="works-section fade-in fade-in-delay-2">
+        {% if tests and tests|length > 0 %}
+        
+        <div class="works-timeline" id="worksContainer">
+            {% for work in tests %}
+            <div class="work-item" 
+                 data-type="{{ work.source if work.source is defined else 'test' }}"
+                 data-subject="{{ work.subject }}"
+                 data-date="{{ work.date }}"
+                 data-days-left="{{ work.days_left if work.days_left is defined else 999 }}">
+                
+                <!-- Date Marker -->
+                <div class="work-date-marker">
+                    <div class="work-date-day">{{ work.date[8:10] }}</div>
+                    <div class="work-date-month">
+                        {% set months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jūn', 'Jūl', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'] %}
+                        {{ months[work.date[5:7]|int] }}
+                    </div>
+                </div>
+                
+                <!-- Work Card -->
+                <div class="work-content-card">
+                    
+                    <!-- Card Header -->
+                    <div class="work-card-header">
+                        <div class="work-card-left">
+                            <span class="work-subject-badge" style="background: {{ subjects[loop.index0 % (subjects|length)].color if subjects else 'var(--primary-gradient)' }}">
+                                {{ work.subject }}
+                            </span>
+                            <h3 class="work-title">{{ work.type }}</h3>
+                        </div>
+                        
+                        <div class="work-card-right">
+                            {% if work.days_left is defined %}
+                            <span class="badge badge-{{ 'today' if work.days_left == 0 else 'tomorrow' if work.days_left == 1 else 'soon' if work.days_left <= 7 else 'future' }}">
+                                {% if work.days_left == 0 %}
+                                    🔥 Šodien!
+                                {% elif work.days_left == 1 %}
+                                    ⏰ Rīt
+                                {% elif work.days_left < 0 %}
+                                    ❌ Nokavēts
+                                {% else %}
+                                    📅 {{ work.days_left }}d
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Card Body -->
+                    <div class="work-card-body">
+                        <div class="work-meta">
+                            <div class="work-meta-item">
+                                <i class="far fa-calendar"></i>
+                                <span>{{ format_date(work.date) if format_date is defined else work.date }}</span>
+                            </div>
+                            <div class="work-meta-item">
+                                <i class="far fa-clock"></i>
+                                <span>{{ work.time if work.time else '23:59' }}</span>
+                            </div>
+                        </div>
+                        
+                        {% if work.description %}
+                        <p class="work-description">{{ work.description }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Card Footer -->
+                    <div class="work-card-footer">
+                        <a href="/subject/{{ work.subject }}" class="work-link">
+                            <i class="fas fa-arrow-right"></i>
+                            Skatīt priekšmetu
+                        </a>
+                        
+                        <div class="work-actions">
+                            <a href="/calendar/{{ 'test' if work.source == 'test' or work.type != 'Mājasdarbs' else 'homework' }}/{{ work.id }}" 
+                               class="btn-icon" 
+                               title="Pievienot kalendāram">
+                                <i class="far fa-calendar-plus"></i>
+                            </a>
+                            
+                            {% if is_host %}
+                            <a href="/delete/{{ work.id }}" 
+                               class="btn-icon btn-icon-danger" 
+                               onclick="return confirm('Vai tiešām dzēst?')"
+                               title="Dzēst">
+                                <i class="far fa-trash-alt"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% else %}
+        
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <h3 class="empty-state-title">Nav darbu</h3>
+            <p class="empty-state-description">
+                Pagaidām nav pievienotu darbu.
+                {% if is_host %}Sāc ar pievienošanu!{% endif %}
+            </p>
+            {% if is_host %}
+            <a href="/add" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Pievienot darbu
+            </a>
+            {% endif %}
+        </div>
+        
+        {% endif %}
+    </section>
+    
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 2rem 0;
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: var(--gray-600);
+    font-size: 1.125rem;
+}
+
+.quick-stats {
+    display: flex;
+    gap: 1rem;
+}
+
+.quick-stat {
+    text-align: center;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.quick-stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.quick-stat-danger .quick-stat-value {
+    background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.quick-stat-warning .quick-stat-value {
+    background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.quick-stat-label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    margin-top: 0.25rem;
+}
+
+/* Filters */
+.filters-section {
+    margin-bottom: 2rem;
+}
+
+.filters-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: 0.875rem;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filter-btn {
+    padding: 0.625rem 1.25rem;
+    border: 2px solid var(--gray-200);
+    background: white;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-start);
+    color: var(--primary-start);
+}
+
+.filter-btn.active {
+    background: var(--primary-gradient);
+    border-color: transparent;
+    color: white;
+}
+
+.filter-select {
+    padding: 0.625rem 1rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-start);
+}
+
+/* Works Timeline */
+.works-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.work-item {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.work-date-marker {
+    text-align: center;
+    padding: 1rem;
+    background: var(--primary-gradient);
+    border-radius: var(--radius-md);
+    color: white;
+    position: sticky;
+    top: 100px;
+}
+
+.work-date-day {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    line-height: 1;
+}
+
+.work-date-month {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.25rem;
+}
+
+.work-content-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+}
+
+.work-content-card:hover {
+    transform: translateX(8px);
+    box-shadow: var(--shadow-md);
+}
+
+.work-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.work-card-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.work-subject-badge {
+    display: inline-block;
+    padding: 0.375rem 0.875rem;
+    border-radius: var(--radius-full);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    align-self: flex-start;
+}
+
+.work-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.work-card-body {
+    margin-bottom: 1rem;
+}
+
+.work-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.work-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+}
+
+.work-description {
+    color: var(--gray-700);
+    line-height: 1.6;
+}
+
+.work-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.work-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-start);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.work-link:hover {
+    transform: translateX(4px);
+}
+
+.work-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gray-100);
+    border-radius: 50%;
+    color: var(--gray-600);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+    background: var(--primary-gradient);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-icon-danger:hover {
+    background: var(--danger);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .quick-stats {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .quick-stat {
+        padding: 0.75rem 1rem;
+    }
+    
+    .filters-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .work-item {
+        grid-template-columns: 60px 1fr;
+        gap: 1rem;
+    }
+    
+    .work-date-marker {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .work-date-day {
+        font-size: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Filter functionality
+const filterBtns = document.querySelectorAll('.filter-btn');
+const subjectFilter = document.getElementById('subjectFilter');
+const sortSelect = document.getElementById('sortSelect');
+const worksContainer = document.getElementById('worksContainer');
+const workItems = document.querySelectorAll('.work-item');
+
+// Calculate stats
+function updateStats() {
+    const works = document.querySelectorAll('.work-item:not([style*="display: none"])');
+    let today = 0, tomorrow = 0;
+    
+    works.forEach(work => {
+        const daysLeft = parseInt(work.dataset.daysLeft);
+        if (daysLeft === 0) today++;
+        if (daysLeft === 1) tomorrow++;
+    });
+    
+    document.getElementById('todayWorks').textContent = today;
+    document.getElementById('tomorrowWorks').textContent = tomorrow;
+    document.getElementById('totalWorks').textContent = works.length;
+}
+
+// Filter by type
+filterBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        applyFilters();
+    });
+});
+
+// Filter by subject
+if (subjectFilter) {
+    subjectFilter.addEventListener('change', applyFilters);
+}
+
+// Sort
+if (sortSelect) {
+    sortSelect.addEventListener('change', applySorting);
+}
+
+function applyFilters() {
+    const activeType = document.querySelector('.filter-btn.active').dataset.filter;
+    const selectedSubject = subjectFilter ? subjectFilter.value : 'all';
+    
+    workItems.forEach(item => {
+        const itemType = item.dataset.type;
+        const itemSubject = item.dataset.subject;
+        
+        const typeMatch = activeType === 'all' || itemType === activeType;
+        const subjectMatch = selectedSubject === 'all' || itemSubject === selectedSubject;
+        
+        if (typeMatch && subjectMatch) {
+            item.style.display = 'grid';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    updateStats();
+}
+
+function applySorting() {
+    const sortValue = sortSelect.value;
+    const itemsArray = Array.from(workItems);
+    
+    itemsArray.sort((a, b) => {
+        switch(sortValue) {
+            case 'date-asc':
+                return new Date(a.dataset.date) - new Date(b.dataset.date);
+            case 'date-desc':
+                return new Date(b.dataset.date) - new Date(a.dataset.date);
+            case 'subject':
+                return a.dataset.subject.localeCompare(b.dataset.subject);
+            case 'days-left':
+                return parseInt(a.dataset.daysLeft) - parseInt(b.dataset.daysLeft);
+        }
+    });
+    
+    itemsArray.forEach(item => worksContainer.appendChild(item));
+}
+
+// Initial stats
+updateStats();
+</script>
+{% endblock %}

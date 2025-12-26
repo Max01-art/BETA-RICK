@@ -1,0 +1,10 @@
+{% extends 'layouts/minimal.html' %}
+{% block title %}Kļūda{% endblock %}
+{% block content %}
+<div style="text-align:center;color:white">
+    <i class="fas fa-exclamation-triangle" style="font-size:5rem;margin-bottom:2rem"></i>
+    <h1 style="color:white">{{ error_code or '404' }}</h1>
+    <p style="font-size:1.5rem">{{ error_message or 'Lapa nav atrasta' }}</p>
+    <a href="/" class="btn btn-secondary" style="margin-top:2rem">Uz sākumlapu</a>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'layouts/base.html' %}
+{% block title %}{{ news.title }}{% endblock %}
+{% block content %}
+<div class="container">
+    <article class="news-detail">
+        {% if news.image_url %}
+        <img src="{{ news.image_url }}" alt="{{ news.title }}">
+        {% endif %}
+        <h1>{{ news.title }}</h1>
+        <p class="news-meta">{{ news.date }}</p>
+        <div class="news-content">{{ news.content|safe }}</div>
+    </article>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'layouts/admin.html' %}
+{% block title %}Pārvaldīt testus{% endblock %}
+{% block admin_content %}
+<h1>Testi</h1>
+<table style="width:100%;border-collapse:collapse">
+    <thead>
+        <tr><th>Priekšmets</th><th>Nosaukums</th><th>Datums</th><th>Darbības</th></tr>
+    </thead>
+    <tbody>
+        {% for test in tests %}
+        <tr>
+            <td>{{ test.subject }}</td>
+            <td>{{ test.type }}</td>
+            <td>{{ test.date }}</td>
+            <td>
+                <a href="/edit/{{ test.id }}" class="btn btn-sm">Rediģēt</a>
+                <a href="/delete/{{ test.id }}" class="btn btn-sm btn-danger">Dzēst</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

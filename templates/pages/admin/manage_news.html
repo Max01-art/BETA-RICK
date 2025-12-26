@@ -1,0 +1,18 @@
+{% extends 'layouts/admin.html' %}
+{% block title %}Pārvaldīt ziņas{% endblock %}
+{% block admin_content %}
+<h1>Ziņas</h1>
+<div style="margin-bottom:2rem">
+    <a href="/add-news" class="btn btn-primary">+ Pievienot ziņu</a>
+</div>
+{% for item in news %}
+<div class="card" style="margin-bottom:1rem">
+    <h3>{{ item.title }}</h3>
+    <p>{{ item.date }}</p>
+    <div>
+        <a href="/edit-news/{{ item.id }}" class="btn btn-sm">Rediģēt</a>
+        <a href="/delete-news/{{ item.id }}" class="btn btn-sm btn-danger">Dzēst</a>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

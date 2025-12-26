@@ -1,0 +1,22 @@
+{% extends 'layouts/admin.html' %}
+{% block title %}Analītika{% endblock %}
+{% block admin_content %}
+<h1>Analītika</h1>
+<div class="stats-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin:2rem 0">
+    <div class="card">
+        <h3>Aktīvie lietotāji</h3>
+        <p style="font-size:3rem;font-weight:700">{{ analytics.active_users }}</p>
+    </div>
+    <div class="card">
+        <h3>Kopā darbi</h3>
+        <p style="font-size:3rem;font-weight:700">{{ analytics.total_works }}</p>
+    </div>
+    <div class="card">
+        <h3>Vidēji dienā</h3>
+        <p style="font-size:3rem;font-weight:700">{{ analytics.avg_per_day }}</p>
+    </div>
+</div>
+<div class="card">
+    <canvas id="analyticsChart"></canvas>
+</div>
+{% endblock %}

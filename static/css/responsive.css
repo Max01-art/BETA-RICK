@@ -1,0 +1,7 @@
+/* Responsive CSS */
+@media (max-width: 768px) {
+    .container { padding: 0 1rem; }
+    .grid { grid-template-columns: 1fr !important; }
+    .admin-sidebar { display: none; }
+    .calendar-grid { grid-template-columns: repeat(7, 1fr); gap: 0.25rem; }
+}

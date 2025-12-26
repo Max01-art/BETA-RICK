@@ -1,0 +1,183 @@
+<!-- Loading Spinner Component -->
+<!-- Usage: {% include 'components/loading_spinner.html' %} -->
+
+<div class="loading-spinner">
+    <div class="spinner-ring"></div>
+    <div class="spinner-ring spinner-ring-delay"></div>
+    <p class="spinner-text">{{ text if text else 'Ielādē...' }}</p>
+</div>
+
+<style>
+/* Loading Spinner Styles */
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2xl);
+    position: relative;
+}
+
+/* Ring */
+.spinner-ring {
+    width: 60px;
+    height: 60px;
+    border: 4px solid var(--gray-200);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    position: absolute;
+}
+
+.spinner-ring::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 4px solid transparent;
+    border-top-color: var(--primary-start);
+    border-radius: 50%;
+}
+
+.spinner-ring-delay {
+    animation-delay: 0.2s;
+    border-top-color: var(--primary-end);
+}
+
+/* Text */
+.spinner-text {
+    margin-top: 80px;
+    color: var(--gray-600);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Variations */
+.loading-spinner.spinner-sm {
+    padding: var(--spacing-lg);
+}
+
+.loading-spinner.spinner-sm .spinner-ring {
+    width: 40px;
+    height: 40px;
+    border-width: 3px;
+}
+
+.loading-spinner.spinner-sm .spinner-ring::before {
+    inset: -3px;
+    border-width: 3px;
+}
+
+.loading-spinner.spinner-sm .spinner-text {
+    margin-top: 60px;
+    font-size: 0.875rem;
+}
+
+.loading-spinner.spinner-lg {
+    padding: var(--spacing-2xl) var(--spacing-lg);
+}
+
+.loading-spinner.spinner-lg .spinner-ring {
+    width: 80px;
+    height: 80px;
+    border-width: 5px;
+}
+
+.loading-spinner.spinner-lg .spinner-ring::before {
+    inset: -5px;
+    border-width: 5px;
+}
+
+.loading-spinner.spinner-lg .spinner-text {
+    margin-top: 100px;
+    font-size: 1.0625rem;
+}
+
+/* Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 9998;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-overlay.active {
+    display: flex;
+}
+
+.loading-overlay .loading-spinner {
+    padding: 0;
+}
+
+/* Inline Spinner (for buttons, etc) */
+.spinner-inline {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+}
+</style>
+
+<script>
+// Utility functions for loading spinner
+if (typeof ClassmateUtils !== 'undefined') {
+    // Show loading overlay
+    ClassmateUtils.showLoading = function(text = 'Ielādē...') {
+        let overlay = document.getElementById('loading-overlay');
+        
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'loading-overlay';
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = `
+                <div class="loading-spinner spinner-lg">
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring spinner-ring-delay"></div>
+                    <p class="spinner-text">${text}</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+        
+        overlay.querySelector('.spinner-text').textContent = text;
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+    
+    // Hide loading overlay
+    ClassmateUtils.hideLoading = function() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    };
+}
+</script>

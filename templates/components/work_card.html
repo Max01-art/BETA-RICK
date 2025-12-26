@@ -1,0 +1,227 @@
+<!-- Work Card Component -->
+<!-- Usage: {% include 'components/work_card.html' with work=work %} -->
+
+<div class="work-card" data-work-id="{{ work.id }}" data-type="{{ work.source if work.source is defined else 'test' }}">
+    
+    <!-- Card Header -->
+    <div class="work-card-header">
+        <div class="work-card-badges">
+            <span class="work-subject-badge" style="background: {{ work.subject_color if work.subject_color is defined else 'var(--primary-gradient)' }}">
+                {{ work.subject }}
+            </span>
+            
+            {% if work.days_left is defined %}
+            <span class="work-deadline-badge badge-{{ 'today' if work.days_left == 0 else 'tomorrow' if work.days_left == 1 else 'soon' if work.days_left <= 7 else 'future' }}">
+                {% if work.days_left == 0 %}
+                    🔥 Šodien!
+                {% elif work.days_left == 1 %}
+                    ⏰ Rīt
+                {% elif work.days_left < 0 %}
+                    ❌ Nokavēts
+                {% else %}
+                    📅 {{ work.days_left }}d
+                {% endif %}
+            </span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Card Body -->
+    <div class="work-card-body">
+        <h3 class="work-card-title">{{ work.type }}</h3>
+        
+        <div class="work-card-meta">
+            <div class="work-meta-item">
+                <i class="far fa-calendar"></i>
+                <span>{{ work.date }}</span>
+            </div>
+            
+            {% if work.time %}
+            <div class="work-meta-item">
+                <i class="far fa-clock"></i>
+                <span>{{ work.time }}</span>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if work.description %}
+        <p class="work-card-description">{{ work.description }}</p>
+        {% endif %}
+    </div>
+    
+    <!-- Card Footer -->
+    <div class="work-card-footer">
+        <a href="/calendar/{{ work.source if work.source is defined else 'test' }}/{{ work.id }}" 
+           class="work-card-btn work-card-btn-calendar"
+           title="Pievienot kalendāram">
+            <i class="far fa-calendar-plus"></i>
+            <span>Kalendārs</span>
+        </a>
+        
+        {% if is_host %}
+        <a href="/delete/{{ work.id }}" 
+           class="work-card-btn work-card-btn-delete"
+           onclick="return confirm('Vai tiešām dzēst {{ work.type }}?')"
+           title="Dzēst darbu">
+            <i class="far fa-trash-alt"></i>
+            <span>Dzēst</span>
+        </a>
+        {% endif %}
+    </div>
+    
+</div>
+
+<style>
+/* Work Card Styles */
+.work-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.work-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.work-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.work-card:hover::before {
+    opacity: 1;
+}
+
+/* Header */
+.work-card-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.work-card-badges {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.work-subject-badge {
+    display: inline-flex;
+    padding: 0.375rem 0.875rem;
+    border-radius: var(--radius-full);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.work-deadline-badge {
+    display: inline-flex;
+    padding: 0.375rem 0.875rem;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* Body */
+.work-card-body {
+    margin-bottom: var(--spacing-lg);
+}
+
+.work-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-md);
+}
+
+.work-card-meta {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.work-meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--gray-600);
+    font-size: 0.875rem;
+}
+
+.work-meta-item i {
+    color: var(--primary-start);
+}
+
+.work-card-description {
+    color: var(--gray-700);
+    line-height: 1.6;
+    font-size: 0.9375rem;
+}
+
+/* Footer */
+.work-card-footer {
+    display: flex;
+    gap: var(--spacing-sm);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--gray-200);
+}
+
+.work-card-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.work-card-btn-calendar {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.work-card-btn-calendar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.work-card-btn-delete {
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.work-card-btn-delete:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .work-card {
+        padding: var(--spacing-lg);
+    }
+    
+    .work-card-footer {
+        flex-direction: column;
+    }
+}
+</style>
