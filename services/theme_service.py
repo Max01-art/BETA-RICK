@@ -457,6 +457,25 @@ def apply_theme_to_response(response, device_id):
     return response
 
 
+def save_custom_theme(device_id, custom_settings):
+    """
+    Сохраняет кастомную тему пользователя
+    
+    Args:
+        device_id (str): ID устройства
+        custom_settings (dict): Настройки цветов
+        
+    Returns:
+        bool: True если успешно
+    """
+    # Валидация
+    is_valid, error = validate_custom_settings(custom_settings)
+    if not is_valid:
+        print(f"Invalid custom settings: {error}")
+        return False
+    
+    # Сохраняем как кастомную тему
+    return save_user_theme(device_id, 'custom', custom_settings)
 # ============================================
 # EXPORT
 # ============================================
