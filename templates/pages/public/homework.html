@@ -167,13 +167,22 @@
         
         {% else %}
         
-        {% include 'components/empty_state.html' with 
-            icon='fas fa-book', 
-            title='Nav mājasdarbu', 
-            message='Pagaidām nav pievienotu mājasdarbu.',
-            action_url='/add' if is_host else none,
-            action_text='Pievienot mājasdarbu',
-            action_icon='fas fa-plus' %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <h3 class="empty-state-title">Nav mājasdarbu</h3>
+            <p class="empty-state-message">
+                Pagaidām nav pievienotu mājasdarbu.
+            </p>
+            {% if is_host %}
+            <a href="/add" class="btn btn-primary empty-state-action">
+                <i class="fas fa-plus"></i>
+                Pievienot mājasdarbu
+            </a>
+            {% endif %}
+        </div>
         
         {% endif %}
     </section>
@@ -454,6 +463,44 @@
 
 .homework-action-delete:hover {
     background: var(--danger);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.empty-state-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 2rem;
+    border-radius: 50%;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    color: var(--gray-400);
+}
+
+.empty-state-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.empty-state-message {
+    color: var(--gray-600);
+    font-size: 1.0625rem;
+    margin-bottom: 2rem;
+}
+
+.empty-state-action {
+    margin-top: 1rem;
 }
 
 /* Responsive */
