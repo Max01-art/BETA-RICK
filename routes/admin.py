@@ -17,13 +17,16 @@ admin_bp = Blueprint('admin', __name__)
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Вход в режим редактирования"""
-    from config.settings import HOST_PASSWORD
+    from config.settings import HOST_PASSWORD, HOST_USERNAME
     
     if request.method == 'POST':
-        if request.form.get('password') == HOST_PASSWORD:
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        if username == HOST_USERNAME and password == HOST_PASSWORD:
             session['is_host'] = True
             return redirect('/')
-        return render_template('pages/auth/login.html', error="Nepareiza parole!")
+        return render_template('pages/auth/login.html', error="Nepareizi dati!")
     
     return render_template('pages/auth/login.html')
 

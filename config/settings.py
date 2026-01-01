@@ -6,7 +6,8 @@ from datetime import timedelta
 
 # ================= БАЗОВЫЕ НАСТРОЙКИ =================
 SECRET_KEY = 'classmate-secret-key-2024'
-HOST_PASSWORD = "kolya333arbuz"
+HOST_USERNAME = os.getenv('HOST_USERNAME', 'admin')
+HOST_PASSWORD = os.getenv('HOST_PASSWORD', 'default')
 
 # ================= БАЗА ДАННЫХ =================
 DB_FILE = 'school.db'
